@@ -6,6 +6,8 @@ before_script:
   - npm install
 script:
     - npm run prod
+    - git config user.name "George Raptis"
+    - git config user.email "georapbox@gmail.com"
     - git add -A
     - git commit -am "Build"
-    - git push origin master 
+    - git push origin master
