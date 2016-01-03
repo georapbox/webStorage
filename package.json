@@ -1,0 +1,33 @@
+{
+  "name": "webStorage",
+  "version": "1.0.0",
+  "description": "A minimal Javascript wrapper to work with Web Storage",
+  "main": "index.js",
+  "scripts": {
+    "prod": "gulp minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georapbox/webStorage.git"
+  },
+  "keywords": [
+    "localStorage",
+    "sessionStorage",
+    "Storage",
+    "Offline Storage",
+    "Web Storage",
+    "DOM Storage"
+  ],
+  "author": "George Raptis <georapbox@gmail.com> (http://georap.gr)",
+  "license": "(MIT)",
+  "bugs": {
+    "url": "https://github.com/georapbox/webStorage/issues"
+  },
+  "homepage": "https://github.com/georapbox/webStorage#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-header": "^1.7.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.1"
+  }
+}
