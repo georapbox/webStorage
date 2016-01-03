@@ -1,3 +1,9 @@
+language: node_js
+branches:
+  only:
+    - master
 before_script:
   - npm install
-script: npm run prod
+script:
+    - npm run prod
+    - git commit
