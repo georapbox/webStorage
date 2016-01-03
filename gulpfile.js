@@ -15,6 +15,14 @@ var banner = [
     ''
 ].join('\n');
 
+gulp.task('copy', function () {
+    return gulp.src('src/webStorage.js').
+        pipe(header(banner, {
+            pkg: pkg
+        })).
+        pipe(gulp.dest('dist'));
+});
+
 gulp.task('minify', function () {
     return gulp.src('src/webStorage.js').
         pipe(uglify()).

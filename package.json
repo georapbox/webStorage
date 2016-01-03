@@ -4,7 +4,7 @@
   "description": "A minimal Javascript wrapper to work with Web Storage",
   "main": "index.js",
   "scripts": {
-    "prod": "gulp minify"
+    "prod": "gulp copy; gulp minify"
   },
   "repository": {
     "type": "git",
