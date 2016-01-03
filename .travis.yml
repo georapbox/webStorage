@@ -5,4 +5,5 @@ branches:
 before_script:
   - npm install
 script:
+    - mkdir dist
     - npm run prod
