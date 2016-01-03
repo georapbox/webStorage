@@ -5,5 +5,7 @@ branches:
 before_script:
   - npm install
 script:
-    - mkdir dist
     - npm run prod
+    - git add -A
+    - git commit -am "Build"
+    - git push origin master 
