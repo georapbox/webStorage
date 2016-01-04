@@ -1,6 +1,6 @@
 {
   "name": "webStorage",
-  "version": "1.0.0",
+  "version": "0.3.1",
   "description": "A minimal Javascript wrapper to work with Web Storage",
   "main": "index.js",
   "scripts": {
