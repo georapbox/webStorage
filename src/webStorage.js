@@ -83,8 +83,8 @@
         var storeName = instance.options.storeName;
         var finalStorageKey = '';
         // @NOTE: Using non strict equality to check for both null and undefined.
-        finalStorageKey = name != null && name !== '' ? finalStorageKey += name + '/' : ''; // jshint ignore: line
-        finalStorageKey = storeName != null && storeName !== '' ? finalStorageKey += storeName + '/' : ''; // jshint ignore: line
+        finalStorageKey += name != null && name !== '' ? name + '/' : ''; // jshint ignore: line
+        finalStorageKey += storeName != null && storeName !== '' ? storeName + '/' : ''; // jshint ignore: line
         return finalStorageKey;
     }
 
@@ -94,7 +94,7 @@
     var proto;
     var defaultConfig = {
         driver: localStorage,
-        name: null,
+        name: 'webStorage',
         storeName: null
     };
 
