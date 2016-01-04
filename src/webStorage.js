@@ -34,6 +34,22 @@
     }
 
     /**
+     * Returns a substring denoted by n (positive or negative) characters.
+     * If n >= 0, returns a substring from the left end of the string.
+     * If n < 0, returns a substring from the right end of the string.
+     * If n is not of type number, returns the whole string intact.
+     * @param {String} str The initial string.
+     * @param {Number} n   The number of characters of the new string.
+     * @returns {String}   The final string.
+     */
+    function _subStr(str, n) {
+        if (typeof n === 'number') {
+            return n >= 0 ? str.substr(0, n) : str.substr(str.length + n, -n);
+        }
+        return str;
+    }
+
+    /**
      * Merges (deep copy) the contents of two or more objects together into the first object.
      * @param {Object} target The object to extend. It will receive the new properties.
      * @param {Object} object1 An object containing additional properties to merge in.
@@ -162,9 +178,29 @@
 
     /**
      * Removes all saved items from localStorage or sessionStorage.
+     * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
+     *
+     * NOTE: The above applies only in cases that a new instance is created and at least one of "name" or "storeName" is set.
+     * This is because the only way to tell if an item is saved by an instance is the prefix of the key which is a combination of "name" & "storeName" properties.
+     * If a new instance is created but does not have "name" or "storeName" set, then .clear() will clear all items from the driver set.
      */
-    proto.clear = function () {
-        this.options.driver.clear();
+    proto.clear = function (clearAll) {
+        var driver = this.options.driver,
+            storeKeyPrefix = this.storeKeyPrefix,
+            storeKeyPrefixLength = storeKeyPrefix.length,
+            key;
+
+        if (clearAll === true) {
+            driver.clear();
+        } else {
+            for (key in driver) {
+                if (driver.hasOwnProperty(key)) {
+                    if (storeKeyPrefix === _subStr(key, storeKeyPrefixLength)) {
+                        driver.removeItem(key);
+                    }
+                }
+            }
+        }
     };
 
     /* Return a new instance of WebStorage */
