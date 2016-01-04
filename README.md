@@ -66,7 +66,7 @@ If the ```name``` property is not set or set to ```''``` (empty string), returns
 config(options)
 ```
 
-Set and persist webStorage options. This must be called before any other calls to webStorage are made. the following options can be set:
+Set and persist webStorage options. This must be called before any other calls to webStorage are made. The following options can be set:
 
 ##### driver
 > The preferred driver to use. Use one between ```localStorage``` and ```sessionStorage```.<br>
