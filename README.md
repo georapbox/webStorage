@@ -1,6 +1,6 @@
 # webStorage.js [![Build Status](https://travis-ci.org/georapbox/webStorage.svg?branch=master)](https://travis-ci.org/georapbox/webStorage)
 
-webStorage is a minimal Javascript library that imporoves the way you work with ```localStorage``` or ```sessionStorage```.
+webStorage is a minimal Javascript library that improves the way you work with ```localStorage``` or ```sessionStorage```.
 
 
 ## Data API
