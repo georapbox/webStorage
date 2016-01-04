@@ -44,9 +44,9 @@ clear([clearAll])
 
 > Use this method with caution.
 
-If ```clearAll``` is set to ```true```, removes every key from the database, returning it to a blank slate.
+If ```clearAll``` is set to ```true```, removes every key from the storage, returning it to a blank slate.
 
-If ```clearAll``` is set to ```false``` or any other falsy value and the instance of webStorage that is in use has at least one of ```name``` or ```storeName``` properties set on configuration, it will remove only the keys that begin with the generated prefix else will remove all keys from the offline storage just like the ```clear(true)``` does.
+If ```clearAll``` is set to ```false``` or any other falsy value and the instance of webStorage that is in use has ```name``` property set on configuration, it will remove only the keys that begin with this prefix else will remove all keys from the offline storage just like the ```clear(true)``` does.
 
 
 ## Settings API

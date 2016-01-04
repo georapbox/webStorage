@@ -180,14 +180,14 @@
      * Removes all saved items from localStorage or sessionStorage.
      * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
      *
-     * NOTE: The above applies only in cases that a new instance is created and at least one of "name" or "storeName" is set.
+     * NOTE: The above applies only in cases that a new instance is created and the "name" is set.
      * This is because the only way to tell if an item is saved by an instance is the prefix of the key which is a combination of "name" & "storeName" properties.
-     * If a new instance is created but does not have "name" or "storeName" set, then .clear() will clear all items from the driver set.
+     * If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
      */
     proto.clear = function (clearAll) {
         var driver = this.options.driver,
-            storeKeyPrefix = this.storeKeyPrefix,
-            storeKeyPrefixLength = storeKeyPrefix.length,
+            dbName = this.options.name,
+            dbNameLength = dbName.length,
             key;
 
         if (clearAll === true) {
@@ -195,7 +195,7 @@
         } else {
             for (key in driver) {
                 if (driver.hasOwnProperty(key)) {
-                    if (storeKeyPrefix === _subStr(key, storeKeyPrefixLength)) {
+                    if (dbName === _subStr(key, dbNameLength)) {
                         driver.removeItem(key);
                     }
                 }
