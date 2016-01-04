@@ -17,31 +17,6 @@
     // HELPER FUNCTIONS
     /* -------------------------------------------------------------------- */
 
-    /**
-     * Checks if Storage is supported.
-     * @param {Object} storageType Available values: localStorage & sessionStorage.
-     * @return {Boolean} Returns true if Storage is supported , else returns false.
-     */
-    function _isStorageSupported(storageType) {
-        var dummy = 'storage.dummy';
-        try {
-            storageType.setItem(dummy, dummy);
-            storageType.removeItem(dummy);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    /**
-     * Returns a substring denoted by n (positive or negative) characters.
-     * If n >= 0, returns a substring from the left end of the string.
-     * If n < 0, returns a substring from the right end of the string.
-     * If n is not of type number, returns the whole string intact.
-     * @param {String} str The initial string.
-     * @param {Number} n   The number of characters of the new string.
-     * @returns {String}   The final string.
-     */
     function _subStr(str, n) {
         if (typeof n === 'number') {
             return n >= 0 ? str.substr(0, n) : str.substr(str.length + n, -n);
@@ -49,13 +24,10 @@
         return str;
     }
 
-    /**
-     * Merges (deep copy) the contents of two or more objects together into the first object.
-     * @param {Object} target The object to extend. It will receive the new properties.
-     * @param {Object} object1 An object containing additional properties to merge in.
-     * @param {Object} objectN Additional objects containing properties to merge in.
-     * @use extend({}, obj1, objN)
-    */
+    function _removePrefixStr(str, prefix) {
+        return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
+    }
+
     function _extend() {
         for (var i = 1, l = arguments.length; i < l; i++) {
             for (var key in arguments[i]) {
@@ -72,20 +44,29 @@
         return arguments[0];
     }
 
-    /**
-     * Creates the storage key be prefixing the user's key,
-     * using the "name" and "storeName" from config object passed.
-     * @param {Object} instance The instance of the webStorage that is currently in use.
-     * @return {String} The final storage key prefixed string.
-     */
+    function _isStorageSupported(storageType) {
+        var dummy = 'storage.dummy';
+        try {
+            storageType.setItem(dummy, dummy);
+            storageType.removeItem(dummy);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
     function _constructStorageKey(instance) {
         var name = instance.options.name;
-        var storeName = instance.options.storeName;
         var finalStorageKey = '';
         // @NOTE: Using non strict equality to check for both null and undefined.
         finalStorageKey += name != null && name !== '' ? name + '/' : ''; // jshint ignore: line
-        finalStorageKey += storeName != null && storeName !== '' ? storeName + '/' : ''; // jshint ignore: line
         return finalStorageKey;
+    }
+
+    function _keyBelongsToDB(instance, key) {
+        var storeKeyPrefix = instance.storeKeyPrefix;
+        var storeKeyPrefixLen = storeKeyPrefix.length;
+        return storeKeyPrefix === _subStr(key, storeKeyPrefixLen);
     }
 
     // PUBLIC API
@@ -94,8 +75,7 @@
     var proto;
     var defaultConfig = {
         driver: localStorage,
-        name: 'webStorage',
-        storeName: null
+        name: 'webStorage'
     };
 
     /**
@@ -181,13 +161,11 @@
      * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
      *
      * NOTE: The above applies only in cases that a new instance is created and the "name" is set.
-     * This is because the only way to tell if an item is saved by an instance is the prefix of the key which is a combination of "name" & "storeName" properties.
+     * This is because the only way to tell if an item is saved by an instance is the prefix of the key which is the "name" property.
      * If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
      */
     proto.clear = function (clearAll) {
         var driver = this.options.driver,
-            dbName = this.options.name,
-            dbNameLength = dbName.length,
             key;
 
         if (clearAll === true) {
@@ -195,12 +173,34 @@
         } else {
             for (key in driver) {
                 if (driver.hasOwnProperty(key)) {
-                    if (dbName === _subStr(key, dbNameLength)) {
+                    if (_keyBelongsToDB(this, key)) {
                         driver.removeItem(key);
                     }
                 }
             }
         }
+    };
+
+    /**
+     * Gets the list of all keys in the offline storage for a specific database.
+     * If "name" property is not set or set to '' (empty string), returns all keys in storage.
+     * @return {Array} An array of all the keys that belong to a specific database.
+     */
+    proto.keys = function () {
+        var driver = this.options.driver,
+            storeKeyPrefix = this.storeKeyPrefix,
+            keysArr = [],
+            key;
+
+        for (key in driver) {
+            if (driver.hasOwnProperty(key)) {
+                if (_keyBelongsToDB(this, key)) {
+                    keysArr.push(_removePrefixStr(key, storeKeyPrefix));
+                }
+            }
+        }
+
+        return keysArr;
     };
 
     /* Return a new instance of WebStorage */
