@@ -24,11 +24,10 @@
         it('Should create a new instance with configured options', function () {
             var ls = webStorage.createInstance({
                 driver: sessionStorage,
-                name: 'MyApp',
-                storeName: 'test'
+                name: 'MyApp'
             });
 
-            expect(ls.storeKeyPrefix).toEqual('MyApp/test/');
+            expect(ls.storeKeyPrefix).toEqual('MyApp/');
         });
     });
 }());
