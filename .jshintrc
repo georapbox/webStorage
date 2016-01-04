@@ -23,6 +23,7 @@
         "expect",
         "it",
         "spyOn",
-		"JSON"
+		"JSON",
+        "webStorage"
     ]
 }

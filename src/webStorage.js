@@ -1,3 +1,7 @@
+/**
+ * webStorage.js
+ * A minimal Javascript wrapper to work with Web Storage
+ */
 (function (name, context, definition) {
     'use strict';
     if (typeof module !== 'undefined' && module.exports) {
