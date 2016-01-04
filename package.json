@@ -4,7 +4,10 @@
   "description": "A minimal Javascript wrapper to work with Web Storage",
   "main": "index.js",
   "scripts": {
-    "prod": "gulp copy; gulp minify; gulp lint;"
+    "test": "karma start",
+    "lint": "gulp lint",
+    "build": "gulp copy; gulp minify; gulp lint; karma start;",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -30,7 +33,17 @@
     "gulp-jshint": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.5.1",
+    "jasmine-core": "^2.4.1",
     "jshint": "^2.8.0",
-    "jshint-stylish": "^2.1.0"
+    "jshint-stylish": "^2.1.0",
+    "karma": "^0.13.16",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-cli": "^0.1.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-htmlfile-reporter": "^0.2.2",
+    "karma-ie-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.2",
+    "phantomjs": "^1.9.19"
   }
 }
