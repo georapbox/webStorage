@@ -6,8 +6,7 @@
   "scripts": {
     "test": "karma start",
     "lint": "gulp lint",
-    "build": "gulp copy; gulp minify; gulp lint; karma start;",
-    "postinstall": "npm run build"
+    "build": "gulp copy; gulp minify; gulp lint; karma start;"
   },
   "repository": {
     "type": "git",
