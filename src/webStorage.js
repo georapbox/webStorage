@@ -1,7 +1,3 @@
-/**
- * webStorage.js
- * A minimal Javascript wrapper to work with Web Storage
- */
 (function (name, context, definition) {
     'use strict';
     if (typeof module !== 'undefined' && module.exports) {
@@ -67,6 +63,19 @@
         var storeKeyPrefix = instance.storeKeyPrefix;
         var storeKeyPrefixLen = storeKeyPrefix.length;
         return storeKeyPrefix === _subStr(key, storeKeyPrefixLen);
+    }
+
+    function _iterateStorage(instance, callback) {
+        var driver = instance.options.driver,
+            key;
+
+        for (key in driver) {
+            if (driver.hasOwnProperty(key)) {
+                if (_keyBelongsToDB(instance, key)) {
+                    callback && callback(key, driver[key]);
+                }
+            }
+        }
     }
 
     // PUBLIC API
@@ -177,13 +186,9 @@
         if (clearAll === true) {
             driver.clear();
         } else {
-            for (key in driver) {
-                if (driver.hasOwnProperty(key)) {
-                    if (_keyBelongsToDB(this, key)) {
-                        driver.removeItem(key);
-                    }
-                }
-            }
+            _iterateStorage(this, function (key) {
+                driver.removeItem(key);
+            });
         }
     };
 
@@ -193,20 +198,39 @@
      * @return {Array} An array of all the keys that belong to a specific database.
      */
     proto.keys = function () {
-        var driver = this.options.driver,
-            storeKeyPrefix = this.storeKeyPrefix,
-            keysArr = [],
-            key;
+        var keysArr = [],
+            storeKeyPrefix = this.storeKeyPrefix;
 
-        for (key in driver) {
-            if (driver.hasOwnProperty(key)) {
-                if (_keyBelongsToDB(this, key)) {
-                    keysArr.push(_removePrefixStr(key, storeKeyPrefix));
-                }
-            }
-        }
-
+        _iterateStorage(this, function (key) {
+            keysArr.push(_removePrefixStr(key, storeKeyPrefix));
+        });
         return keysArr;
+    };
+
+    /**
+     * Gets the number of keys in the datastore.
+     * @return {Number} The number of keys in the datastore.
+     */
+    proto.length = function () {
+        var counter = 0;
+        _iterateStorage(this, function () {
+            counter += 1;
+        });
+        return counter;
+    };
+
+    /**
+     * Iterate over all value/key pairs in datastore.
+     * @param {Function} callback A callabck function to execute for each iteration.
+     */
+    proto.iterate = function (callback) {
+        var storeKeyPrefix = this.storeKeyPrefix;
+        _iterateStorage(this, function (key, value) {
+            callback && callback({
+                key: _removePrefixStr(key, storeKeyPrefix),
+                value: value
+            });
+        });
     };
 
     /* Return a new instance of WebStorage */

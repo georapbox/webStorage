@@ -57,6 +57,26 @@ keys()
 Gets the list of all keys in the offline storage for a specific database.
 If the ```name``` property is not set or set to ```''``` (empty string), returns all keys in storage.
 
+### length
+
+```js
+length()
+```
+
+Gets the number of keys in the datastore.
+
+### iterate
+
+```js
+iterate(iteratorCallback)
+```
+
+Iterate over all value/key pairs in datastore.
+
+```iteratorCallback``` is called once for each pair, with the following arguments:
+- key
+- value
+
 
 ## Settings API
 
