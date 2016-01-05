@@ -74,7 +74,7 @@ Default: ```localStorage```
 
 ##### name
 > The name of the database or the application. This is used as prefix for all keys stored in the offline storage.<br>
-Default: ```webStorage```
+Default: ```"webStorage"```
 
 
 ### createInstance
