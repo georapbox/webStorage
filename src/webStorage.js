@@ -67,12 +67,15 @@
 
     function _iterateStorage(instance, callback) {
         var driver = instance.options.driver,
+            iterationNumber = 0,
             key;
 
         for (key in driver) {
             if (driver.hasOwnProperty(key)) {
                 if (_keyBelongsToDB(instance, key)) {
-                    callback && callback(key, driver[key]);
+                    if (callback(key, driver[key], ++iterationNumber) === false) {
+                        return false;
+                    }
                 }
             }
         }
@@ -180,9 +183,7 @@
      * If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
      */
     proto.clear = function (clearAll) {
-        var driver = this.options.driver,
-            key;
-
+        var driver = this.options.driver;
         if (clearAll === true) {
             driver.clear();
         } else {
@@ -225,11 +226,11 @@
      */
     proto.iterate = function (callback) {
         var storeKeyPrefix = this.storeKeyPrefix;
-        _iterateStorage(this, function (key, value) {
-            callback && callback({
-                key: _removePrefixStr(key, storeKeyPrefix),
-                value: value
-            });
+
+        _iterateStorage(this, function (key, value, iterationNumber) {
+            if (callback && callback(_removePrefixStr(key, storeKeyPrefix), value, iterationNumber) === false) {
+                return false;
+            }
         });
     };
 

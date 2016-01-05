@@ -73,9 +73,13 @@ iterate(iteratorCallback)
 
 Iterate over all value/key pairs in datastore.
 
-```iteratorCallback``` is called once for each pair, with the following arguments:
+<code>iteratorCallback</code> is called once for each pair, with the following arguments:
+
 - key
 - value
+- iterationNumber (one-based number)
+
+You can early exit from iterator by returning ```false``` inside ```iteratorCallback```.
 
 
 ## Settings API
