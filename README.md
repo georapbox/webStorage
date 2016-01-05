@@ -46,7 +46,7 @@ clear([clearAll])
 
 If ```clearAll``` is set to ```true```, removes every key from the storage, returning it to a blank slate.
 
-If ```clearAll``` is set to ```false``` or any other falsy value and the instance of webStorage that is in use has ```name``` property set on configuration, it will remove only the keys that begin with this prefix else will remove all keys from the offline storage just like the ```clear(true)``` does.
+If ```clearAll``` is set to ```false``` or any other falsy value it will remove only the keys that belong to the specific databse.
 
 ### keys
 
@@ -73,7 +73,7 @@ Set and persist webStorage options. This must be called before any other calls t
 Default: ```localStorage```
 
 ##### name
-> The name of the database or the application. This is used as prefix for all keys stored in the offline storage.<br>
+> The name of the database. This is used as prefix for all keys stored in the offline storage.<br>
 Default: ```"webStorage"```
 
 

@@ -24,6 +24,10 @@
         return str;
     }
 
+    function _trimStr(str) {
+        return String.prototype.trim ? str.trim() : str.replace(/(^\s*|\s*$)/g, '');
+    }
+
     function _removePrefixStr(str, prefix) {
         return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
     }
@@ -56,11 +60,7 @@
     }
 
     function _constructStorageKey(instance) {
-        var name = instance.options.name;
-        var finalStorageKey = '';
-        // @NOTE: Using non strict equality to check for both null and undefined.
-        finalStorageKey += name != null && name !== '' ? name + '/' : ''; // jshint ignore: line
-        return finalStorageKey;
+        return instance.options.name + '/';
     }
 
     function _keyBelongsToDB(instance, key) {
@@ -85,9 +85,12 @@
      */
     function WebStorage(options) {
         options = _extend({}, defaultConfig, options);
+        if (options.name == null || _trimStr(options.name) === '') { // jshint ignore: line
+            throw 'You must use a valid name for the database.';
+        }
         if (_isStorageSupported(options.driver)) {
             this.options = options;
-            this.storeKeyPrefix = _constructStorageKey(this, this.options);
+            this.storeKeyPrefix = _constructStorageKey(this);
         } else {
             throw 'Web Storage is not supported by your browser.';
         }
@@ -109,8 +112,11 @@
      */
     proto.config = function (options) {
         options = _extend({}, defaultConfig, options);
+        if (options.name == null || _trimStr(options.name) === '') { // jshint ignore: line
+            throw 'You must use a valid name for the database.';
+        }
         this.options = options;
-        this.storeKeyPrefix = _constructStorageKey(this, this.options);
+        this.storeKeyPrefix = _constructStorageKey(this);
     };
 
     /**
