@@ -6,6 +6,8 @@
         uglify = require('gulp-uglify'),
         header = require('gulp-header'),
         jshint = require('gulp-jshint'),
+        strip = require('gulp-strip-comments'),
+        removeEmptyLines = require('gulp-remove-empty-lines'),
         pkg = require('./package.json');
 
     var banner = [
@@ -21,6 +23,8 @@
 
     gulp.task('copy', function () {
         return gulp.src('src/webStorage.js')
+            .pipe(strip())
+            .pipe(removeEmptyLines())
             .pipe(header(banner, {
                 pkg: pkg
             }))
@@ -40,7 +44,7 @@
     });
 
     gulp.task('lint', function () {
-        return gulp.src('./dist/webStorage.js')
+        return gulp.src('./src/webStorage.js')
             .pipe(jshint())
             .pipe(jshint.reporter('jshint-stylish'));
     });
