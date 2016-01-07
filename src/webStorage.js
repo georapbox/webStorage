@@ -264,7 +264,7 @@
         var storeKeyPrefix = this.storeKeyPrefix;
 
         _iterateStorage(this, function (key, value, iterationNumber) {
-            if (callback && callback(_str_removePrefix(key, storeKeyPrefix), value, iterationNumber) === false) {
+            if (callback && callback(_str_removePrefix(key, storeKeyPrefix), JSON.parse(value), iterationNumber) === false) {
                 return false;
             }
         });
