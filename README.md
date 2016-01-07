@@ -57,7 +57,6 @@ keys()
 ```
 
 Gets the list of all keys in the offline storage for a specific database.
-If the ```name``` property is not set or set to ```''``` (empty string), returns all keys in storage.
 
 ### length
 
@@ -104,11 +103,11 @@ Set and persist webStorage options. This must be called before any other calls t
 
 ##### driver
 > The preferred driver to use. Use one between ```localStorage``` and ```sessionStorage```.<br>
-Default: ```localStorage```
+Default: ```localStorage {Object}```
 
 ##### name
 > The name of the database. This is used as prefix for all keys stored in the offline storage.<br>
-Default: ```"webStorage"```
+Default: ```webStorage {String}```
 
 
 ### createInstance
