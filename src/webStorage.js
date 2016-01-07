@@ -13,11 +13,8 @@
     // UTILITY FUNCTIONS
     /* -------------------------------------------------------------------- */
 
-    function _str_sub(str, n) {
-        if (typeof n === 'number') {
-            return n >= 0 ? str.substr(0, n) : str.substr(str.length + n, -n);
-        }
-        return str;
+    function _str_beginsWith(str, prefix) {
+        return str.substr(0, prefix.length) === prefix;
     }
 
     function _str_trim(str) {
@@ -80,9 +77,7 @@
      * @return {Boolean} Returns true if key belongs to a database else returns false.
      */
     function _keyBelongsToDB(instance, key) {
-        var storeKeyPrefix = instance.storeKeyPrefix;
-        var storeKeyPrefixLen = storeKeyPrefix.length;
-        return storeKeyPrefix === _str_sub(key, storeKeyPrefixLen);
+        return _str_beginsWith(key, instance.storeKeyPrefix);
     }
 
     /**
