@@ -120,6 +120,67 @@ createInstance([options])
 Creates a new instance of the webStorage. The ```options``` are the same as ```config(options)```.
 
 
+## Usage Example
+
+```js
+var users = [
+    {id: 1, name: 'John Doe', email: 'johndoe@gmail.com'},
+    {id: 2, name: 'George Cooper', email: 'gcooper@outlook.com'},
+    {id: 2, name: 'Tim Smith', email: 'smith_t@yahoo.com'}
+];
+
+var companies = ['Google', 'Yahoo', 'Microsoft', 'Mozilla'];
+
+/* Saving some items with the default configuration */
+webStorage.setItem('user', users[0]);
+webStorage.setItem('company', companies[0]);
+
+/* Create a new instance and save some items */
+var ls = webStorage.createInstance({
+    name: 'MyApp'
+});
+
+ls.setItem('user', users[1]);
+ls.setItem('company', companies[2]);
+ls.setItem('dummyKey', 100);
+
+/* Retrieving saved items */
+webStorage.getItem('user'); // => Object { id: 1, name: "John Doe", email: "johndoe@gmail.com" }
+webStorage.getItem('company'); // => "Google"
+
+ls.getItem('user'); // => Object { id: 2, name: "George Cooper", email: "gcooper@outlook.com" }
+ls.getItem('company'); // => "Microsoft"
+
+/* Get length of datastores */
+webStorage.length(); // => 2
+ls.length(); // => 3
+
+/* Get datastores' keys */
+webStorage.keys(); // => Array [ "company", "user" ]
+ls.keys(); // => Array [ "dummyKey", "company", "user" ]
+
+/* Itereate over datastores */
+ls.iterate(function (key, value, iterNum) {
+    console.log(iterNum, ':', key, ':', value);
+});
+// => 1 : dummyKey : 100
+// => 2 : company : Microsoft
+// => 3 : user : Object { id: 2, name: "George Cooper", email: "gcooper@outlook.com" }
+
+/* Removing items */
+webStorage.removeItem('user');
+webStorage.length(); // => 1
+webStorage.keys(); // => Array [ "company" ]
+ls.length(); // => 3 (still same as before)
+ls.clear(); /* Clear only the "MyApp" datastore */
+ls.length(); // => 0
+ls.keys(); // => Array []
+webStorage.length(); // => 1
+ls.clear(true); /* Flush away everything in localStorage */
+webStorage.length(); // => 0
+```
+
+
 ## Build the project
 
 ### 1. Install dependancies
