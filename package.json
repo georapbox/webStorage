@@ -2,7 +2,7 @@
   "name": "webStorage",
   "version": "0.5.2",
   "description": "A minimal Javascript wrapper to work with Web Storage",
-  "main": "index.js",
+  "main": "src/webStorage.js",
   "scripts": {
     "test": "karma start",
     "lint": "gulp lint",
