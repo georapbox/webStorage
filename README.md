@@ -83,6 +83,14 @@ Iterate over all value/key pairs in datastore.
 
 You can early exit from iterator by returning ```false``` inside ```iteratorCallback```.
 
+### supported
+
+```js
+supported()
+```
+
+Checks if the driver of choice (<code>localStorage</code> or <code>sessionStorage</code>) is supported by the browser.
+
 
 ## Settings API
 
