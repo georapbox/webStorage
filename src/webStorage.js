@@ -123,15 +123,17 @@
      */
     function WebStorage(options) {
         options = _obj_extend({}, defaultConfig, options);
+
+        if (!_isStorageSupported(options.driver)) {
+            throw new Error('Web Storage is not supported by your browser.');
+        }
+
         if (options.name == null || _str_trim(options.name) === '') { // jshint ignore: line
             throw 'You must use a valid name for the database.';
         }
-        if (_isStorageSupported(options.driver)) {
-            this.options = options;
-            this.storeKeyPrefix = _createKeyPrefix(this);
-        } else {
-            throw 'Web Storage is not supported by your browser.';
-        }
+
+        this.options = options;
+        this.storeKeyPrefix = _createKeyPrefix(this);
     }
 
     proto = WebStorage.prototype;
@@ -265,6 +267,15 @@
                 return false;
             }
         });
+    };
+
+    /**
+     * Checks if the driver of choice (localStorage || sessionStorage) is supported.
+     * @this {WebStorage}
+     * @return {Boolean} Returns true if Web Storage is supported else returns false.
+     */
+    proto.supported = function () {
+        return _isStorageSupported(this.options.driver);
     };
 
     /* Return a new instance of WebStorage */
