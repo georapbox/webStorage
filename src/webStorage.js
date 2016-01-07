@@ -1,9 +1,9 @@
 (function (name, context, definition) {
     'use strict';
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = definition();
-    } else if (typeof define === 'function' && define.amd) {
+    if (typeof define === 'function' && define.amd) {
         define(definition);
+    } else if (typeof module !== 'undefined' && module.exports) {
+        module.exports = definition();
     } else {
         context[name] = definition();
     }
@@ -170,8 +170,8 @@
         var item = this.options.driver.getItem(this.storeKeyPrefix + key);
         try {
             return JSON.parse(item);
-        } catch (err) {
-            return item;
+        } catch (error) {
+            throw error;
         }
     };
 
@@ -185,6 +185,7 @@
     proto.setItem = function (key, value) {
         var self = this;
         try {
+            value = value == null ? null : value; // jshint ignore: line
             key = self.storeKeyPrefix + key;
             self.options.driver.setItem(key, JSON.stringify(value));
             return value;

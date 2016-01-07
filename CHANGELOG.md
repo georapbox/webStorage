@@ -2,6 +2,9 @@
 
 ## v0.5.x
 
+### 0.5.2
+- Fix issue when trying to save item with ```undefined``` as value.
+
 ### 0.5.1
 - Add ```supported()``` method to public API, to check if the driver of choice is supported by the browser.
 
