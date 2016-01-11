@@ -199,7 +199,7 @@ webStorage.length(); // => 0
 ### 1. Install dependancies
 
 ```sh
-cd webStorage
+$ cd webStorage
 $ npm install
 ```
 
