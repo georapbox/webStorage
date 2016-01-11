@@ -84,6 +84,14 @@ Iterate over all value/key pairs in datastore.
 
 You can early exit from iterator by returning ```false``` inside ```iteratorCallback```.
 
+### quota
+
+```js
+quota()
+```
+
+Display the size for each key in datastore and the total size of all kesy in MB.
+
 ### supported
 
 ```js
@@ -179,6 +187,10 @@ ls.keys(); // => Array []
 webStorage.length(); // => 1
 ls.clear(true); /* Flush away everything in localStorage */
 webStorage.length(); // => 0
+
+/* Quota */
+ls.quota();
+// => Object { "total": 0.0001430511474609375, "items": { "MyApp/dummyKey": 0.0000057220458984375, "MyApp/company": 0.0000209808349609375, "MyApp/user": 0.0001163482666015625 } }"
 ```
 
 

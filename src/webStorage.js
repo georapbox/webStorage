@@ -266,6 +266,28 @@
     };
 
     /**
+     * Display (approximately) the size for each key in datastore and the total size of all kesy in MB.
+     * @this {WebStorage}
+     * @returns {Object<string, number>} An object with two properties that display the size for each key and the total size in MB.
+     */
+    proto.quota = function () {
+        var items = {},
+            totalSize = 0,
+            itemSize;
+
+        _iterateStorage(this, function (key, value) {
+            itemSize = ((value.length * 2) / 1024 / 1024);
+            totalSize += itemSize;
+            items[key] = itemSize;
+        });
+
+        return {
+            total: totalSize,
+            items: items
+        };
+    };
+
+    /**
      * Checks if the driver of choice (localStorage || sessionStorage) is supported.
      * @this {WebStorage}
      * @return {Boolean} Returns true if Web Storage is supported else returns false.
