@@ -8,6 +8,7 @@
         jshint = require('gulp-jshint'),
         strip = require('gulp-strip-comments'),
         removeEmptyLines = require('gulp-remove-empty-lines'),
+        zip = require('gulp-zip'),
         pkg = require('./package.json');
 
     var banner = [
@@ -48,4 +49,14 @@
             .pipe(jshint())
             .pipe(jshint.reporter('jshint-stylish'));
     });
+
+    function compressFn() {
+        return gulp
+            .src('dist/*')
+            .pipe(zip('dist.zip'))
+            .pipe(gulp.dest('./'));
+    }
+
+    gulp.task('build', ['lint', 'copy', 'minify']);
+    gulp.task('build_travis', ['lint', 'copy', 'minify'], compressFn);
 }());

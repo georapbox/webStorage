@@ -1,10 +1,16 @@
 language: node_js
 node_js:
-    - 0.12
-branches:
-  only:
-    - master
+  - 0.12
 before_script:
   - npm install
 script:
-    - npm run build
+  - npm run build_travis
+deploy:
+  provider: releases
+  api_key:
+    secure: jgFBcN8C0pvnQ5Vwj3tVkLK8iB/bOYPRcoXtDmEFfIVglh/VrSVpsmou7GgXM4cgvrGU8ckTSnHCwkzw6Ykid3lfgwFS3g+VbC0tDVf6GphKxjxwxXw+5Tbkkgktgxbb9i32undofyC3inkop8aDa3f0gwF6pFEqKNm07UpCJBDGsYbvD68ekXkotZkuyw6SOxkSil/GpKlZigq0oxU5ykRh297w6DK/DBMSOEnt5YcRjcVi/KPFSQ1cypaNS+ra3ti2kuj7Gia6f6h07EbTHdq2pzdr4/WIlatV1TYQrXzPzDeuFEl6Qlrg0fqxTbKDs3CMqYpts6FSyFbryTgTMohy9lz7CcgtmjpVizWN3MT/Q7IoPsAG8Ja4m9S7FPcyycJ1ywAyKEov8MI6Y0jhtIqNMNH315IJSawI49d/KtOEZD22o6UNfJMYbDMAy0kMNpJIC6XoLqO/eHKVcwHS6ufm8L1hX6NMh2KaPAtr/8fHfoVbAzMnyvYqYYE705ItpzE0MHmlAiN9zD9ai3cFlF+2ZnWRIVrVAUakoPyoiCq0zgRAAeRS8rA8nAKGFeO+5FbWStUK2sMQKOWQrSmgdiGHFwdDdRUAGJuHNYiME9WyVqjMiN+/SQAKGOpNkPq049H1KufLyLFi7oZsgRiabQLkfhTHYi4mta4HQx8+zVw=
+  file: dist.zip
+  skip_cleanup: true
+  on:
+    repo: georapbox/webStorage
+    tags: true
