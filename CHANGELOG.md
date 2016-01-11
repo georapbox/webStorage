@@ -1,19 +1,21 @@
 # CHANGELOG
+## v0.6.x
+### 0.6.0
+- Add `quota()` public API method.
 
 ## v0.5.x
-
 ### 0.5.3
-- [Bugfix] Use ```JSON.parse``` to values on each iteration.
+- [Bugfix] Use `JSON.parse` to values on each iteration.
 - Add a "Usage Example" in documentation.
 
 ### 0.5.2
-- Fix issue when trying to save item with ```undefined``` as value.
+- Fix issue when trying to save item with `undefined` as value.
 
 ### 0.5.1
-- Add ```supported()``` method to public API, to check if the driver of choice is supported by the browser.
+- Add `supported()` method to public API, to check if the driver of choice is supported by the browser.
 
 ### 0.5.0
-- Add ```length()``` and ```iterate()``` public API methods.
+- Add `length()` and `iterate()` public API methods.
 - Make database name a required option to easily distinguish between different datastores.
 - Remove comments (inline and block) and empty lines from production files.
 - [Bugfix] Fix issues with creating the keys prefixes from the database name.
