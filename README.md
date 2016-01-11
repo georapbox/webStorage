@@ -176,6 +176,10 @@ ls.iterate(function (key, value, iterNum) {
 // => 2 : company : Microsoft
 // => 3 : user : Object { id: 2, name: "George Cooper", email: "gcooper@outlook.com" }
 
+/* Quota */
+ls.quota();
+// => Object { "total": 0.0001430511474609375, "items": { "MyApp/dummyKey": 0.0000057220458984375, "MyApp/company": 0.0000209808349609375, "MyApp/user": 0.0001163482666015625 } }"
+
 /* Removing items */
 webStorage.removeItem('user');
 webStorage.length(); // => 1
@@ -187,10 +191,6 @@ ls.keys(); // => Array []
 webStorage.length(); // => 1
 ls.clear(true); /* Flush away everything in localStorage */
 webStorage.length(); // => 0
-
-/* Quota */
-ls.quota();
-// => Object { "total": 0.0001430511474609375, "items": { "MyApp/dummyKey": 0.0000057220458984375, "MyApp/company": 0.0000209808349609375, "MyApp/user": 0.0001163482666015625 } }"
 ```
 
 
