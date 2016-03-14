@@ -123,7 +123,7 @@ Set and persist webStorage options. This must be called before any other calls t
 createInstance([options])
 ```
 
-Creates a new instance of the webStorage. The ```options``` are the same as ```config(options)```.
+Creates a new instance of the webStorage. The ```options``` can be the same as ```config(options)```.
 
 
 ## Usage Example
