@@ -111,13 +111,10 @@ config(options)
 
 Set and persist webStorage options. This must be called before any other calls to webStorage are made. The following options can be set:
 
-##### driver
-> The preferred driver to use. Use one between ```localStorage``` and ```sessionStorage```.<br>
-Default: ```localStorage {Object}```
-
-##### name
-> The name of the database. This is used as prefix for all keys stored in the offline storage.<br>
-Default: ```webStorage {String}```
+|Option|Type|Description|Default value|
+|------|----|-----------|-------------|
+|**driver**|`Object`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|`localStorage`|
+|**name**|`String`|The name of the database. This is used as prefix for all keys stored in the offline storage.|`webStorage`|
 
 
 ### createInstance
