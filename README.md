@@ -90,7 +90,7 @@ You can early exit from iterator by returning ```false``` inside ```iteratorCall
 quota()
 ```
 
-Approximately display the size for each key in datastore and the total size of all kesy in MB.
+Approximately display the size for each key in datastore and the total size of all keys in MB.
 
 ### supported
 
