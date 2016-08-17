@@ -191,7 +191,21 @@ webStorage.length(); // => 0
 ```
 
 
-## Build the project
+## Install
+
+### npm
+
+```sh
+$ npm install webStorage
+```
+
+### git
+
+```sh
+$ git clone https://github.com/georapbox/webStorage.git
+```
+
+## Build the project for development
 
 ### 1. Install dependancies
 
