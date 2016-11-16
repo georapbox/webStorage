@@ -1,317 +1,317 @@
 (function (name, context, definition) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        define(definition);
-    } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = definition();
-    } else {
-        context[name] = definition();
-    }
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+    define(definition);
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = definition();
+  } else {
+    context[name] = definition();
+  }
 }('webStorage', this, function () {
-    'use strict';
+  'use strict';
 
-    // UTILITY FUNCTIONS
-    /* -------------------------------------------------------------------- */
+  // UTILITY FUNCTIONS
+  /* -------------------------------------------------------------------- */
 
-    function _str_beginsWith(str, prefix) {
-        return str.substr(0, prefix.length) === prefix;
-    }
+  function _str_beginsWith(str, prefix) {
+    return str.substr(0, prefix.length) === prefix;
+  }
 
-    function _str_trim(str) {
-        return String.prototype.trim ? str.trim() : str.replace(/(^\s*|\s*$)/g, '');
-    }
+  function _str_trim(str) {
+    return String.prototype.trim ? str.trim() : str.replace(/(^\s*|\s*$)/g, '');
+  }
 
-    function _str_removePrefix(str, prefix) {
-        return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
-    }
+  function _str_removePrefix(str, prefix) {
+    return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
+  }
 
-    function _obj_extend() {
-        for (var i = 1, l = arguments.length; i < l; i++) {
-            for (var key in arguments[i]) {
-                if (arguments[i].hasOwnProperty(key)) {
-                    if (arguments[i][key] && arguments[i][key].constructor && arguments[i][key].constructor === Object) {
-                        arguments[0][key] = arguments[0][key] || {};
-                        _obj_extend(arguments[0][key], arguments[i][key]);
-                    } else {
-                        arguments[0][key] = arguments[i][key];
-                    }
-                }
-            }
+  function _obj_extend() {
+    for (var i = 1, l = arguments.length; i < l; i++) {
+      for (var key in arguments[i]) {
+        if (arguments[i].hasOwnProperty(key)) {
+          if (arguments[i][key] && arguments[i][key].constructor && arguments[i][key].constructor === Object) {
+            arguments[0][key] = arguments[0][key] || {};
+            _obj_extend(arguments[0][key], arguments[i][key]);
+          } else {
+            arguments[0][key] = arguments[i][key];
+          }
         }
-        return arguments[0];
+      }
     }
+    return arguments[0];
+  }
 
-    // HELPER FUNCTIONS
-    /* -------------------------------------------------------------------- */
+  // HELPER FUNCTIONS
+  /* -------------------------------------------------------------------- */
 
-    /**
-     * Helper function to check if Web Storage is supported.
-     *
-     * @param {Object} storageType The type of the offline storage (localStorage || sessionStorage).
-     * @return {Boolean} Returns true if supported else returns false.
-     */
-    function _isStorageSupported(storageType) {
-        var dummy = 'storage.dummy';
-        try {
-            storageType.setItem(dummy, dummy);
-            storageType.removeItem(dummy);
-            return true;
-        } catch (error) {
+  /**
+   * Helper function to check if Web Storage is supported.
+   *
+   * @param {Object} storageType The type of the offline storage (localStorage || sessionStorage).
+   * @return {Boolean} Returns true if supported else returns false.
+   */
+  function _isStorageSupported(storageType) {
+    var dummy = 'storage.dummy';
+    try {
+      storageType.setItem(dummy, dummy);
+      storageType.removeItem(dummy);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Helper function that creates the storage key's prefix.
+   *
+   * @param {Object} instance The WebStorage instance.
+   * @return {String} Returns the keys's prefix.
+   */
+  function _createKeyPrefix(instance) {
+    return instance.options.name + '/';
+  }
+
+  /**
+   * Helper function that checks if a key belongs to a database.
+   * Check is done using the keys' prefix.
+   *
+   * @param {Object} instance The WebStorage instance.
+   * @param {String} key The key to check if belongs to a database.
+   * @return {Boolean} Returns true if key belongs to a database else returns false.
+   */
+  function _keyBelongsToDB(instance, key) {
+    return _str_beginsWith(key, instance.storeKeyPrefix);
+  }
+
+  /**
+   * Helper function that iterates over storage keys.
+   * Early exit by returning false inside iterator callback.
+   *
+   * @param {Object} instance The WebStorage instance.
+   * @param {function} callabck A function to be executed for each iteration.
+   */
+  function _iterateStorage(instance, callback) {
+    var driver = instance.options.driver,
+      iterationNumber = 0,
+      key;
+
+    for (key in driver) {
+      if (driver.hasOwnProperty(key)) {
+        if (_keyBelongsToDB(instance, key)) {
+          if (callback(key, driver[key], ++iterationNumber) === false) {
             return false;
+          }
         }
+      }
+    }
+  }
+
+  // PUBLIC API
+  /* -------------------------------------------------------------------- */
+
+  var proto;
+  var defaultConfig = {
+    driver: localStorage,
+    name: 'webStorage'
+  };
+
+  /**
+   * WebStorage constructor
+   *
+   * @constructor
+   * @param {Object} [options] Object that contains config options to extend defaults.
+   */
+  function WebStorage(options) {
+    options = _obj_extend({}, defaultConfig, options);
+
+    if (!_isStorageSupported(options.driver)) {
+      throw new Error('Web Storage is not supported by your browser.');
     }
 
-    /**
-     * Helper function that creates the storage key's prefix.
-     *
-     * @param {Object} instance The WebStorage instance.
-     * @return {String} Returns the keys's prefix.
-     */
-    function _createKeyPrefix(instance) {
-        return instance.options.name + '/';
+    if (options.name == null || _str_trim(options.name) === '') { // jshint ignore: line
+      throw 'You must use a valid name for the database.';
     }
 
-    /**
-     * Helper function that checks if a key belongs to a database.
-     * Check is done using the keys' prefix.
-     *
-     * @param {Object} instance The WebStorage instance.
-     * @param {String} key The key to check if belongs to a database.
-     * @return {Boolean} Returns true if key belongs to a database else returns false.
-     */
-    function _keyBelongsToDB(instance, key) {
-        return _str_beginsWith(key, instance.storeKeyPrefix);
+    this.options = options;
+    this.storeKeyPrefix = _createKeyPrefix(this);
+  }
+
+  proto = WebStorage.prototype;
+
+  /**
+   * Creates a new instance of WebStorage.
+   *
+   * @param {Object} options Object that contains config options to extend defaults.
+   * @return {Object} The WebStorage new instance.
+   */
+  proto.createInstance = function (options) {
+    return new WebStorage(options);
+  };
+
+  /**
+   * Configures the instance of WebStorage with user's options that will extend the defaults.
+   *
+   * @this {WebStorage}
+   * @param {Object} options Object that contains config options to extend defaults.
+   */
+  proto.config = function (options) {
+    options = _obj_extend({}, defaultConfig, options);
+    if (options.name == null || _str_trim(options.name) === '') { // jshint ignore: line
+      throw 'You must use a valid name for the database.';
     }
+    this.options = options;
+    this.storeKeyPrefix = _createKeyPrefix(this);
+  };
 
-    /**
-     * Helper function that iterates over storage keys.
-     * Early exit by returning false inside iterator callback.
-     *
-     * @param {Object} instance The WebStorage instance.
-     * @param {function} callabck A function to be executed for each iteration.
-     */
-    function _iterateStorage(instance, callback) {
-        var driver = instance.options.driver,
-            iterationNumber = 0,
-            key;
-
-        for (key in driver) {
-            if (driver.hasOwnProperty(key)) {
-                if (_keyBelongsToDB(instance, key)) {
-                    if (callback(key, driver[key], ++iterationNumber) === false) {
-                        return false;
-                    }
-                }
-            }
-        }
+  /**
+   * Gets a saved item from localStorage or sessionStorage by its key.
+   *
+   * @this {WebStorage}
+   * @param {String} key The property name of the item to save.
+   * @return {*} Returns the saved item.
+   */
+  proto.getItem = function (key) {
+    var item = this.options.driver.getItem(this.storeKeyPrefix + key);
+    try {
+      return JSON.parse(item);
+    } catch (error) {
+      throw error;
     }
+  };
 
-    // PUBLIC API
-    /* -------------------------------------------------------------------- */
-
-    var proto;
-    var defaultConfig = {
-        driver: localStorage,
-        name: 'webStorage'
-    };
-
-    /**
-     * WebStorage constructor
-     *
-     * @constructor
-     * @param {Object} [options] Object that contains config options to extend defaults.
-     */
-    function WebStorage(options) {
-        options = _obj_extend({}, defaultConfig, options);
-
-        if (!_isStorageSupported(options.driver)) {
-            throw new Error('Web Storage is not supported by your browser.');
-        }
-
-        if (options.name == null || _str_trim(options.name) === '') { // jshint ignore: line
-            throw 'You must use a valid name for the database.';
-        }
-
-        this.options = options;
-        this.storeKeyPrefix = _createKeyPrefix(this);
+  /**
+   * Saves an item to localStorage or sessionStorage.
+   *
+   * @this {WebStorage}
+   * @param {String} key The property name of teh item to save.
+   * @param {*} value The item to save to the selected storage.
+   * @return {*} Returns the saved item's value if save successful else throws error.
+   */
+  proto.setItem = function (key, value) {
+    var self = this;
+    try {
+      value = value == null ? null : value; // jshint ignore: line
+      key = self.storeKeyPrefix + key;
+      self.options.driver.setItem(key, JSON.stringify(value));
+      return value;
+    } catch (error) {
+      if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+        throw new Error('Could not save item due to quota exceed.');
+      } else {
+        throw error;
+      }
     }
+  };
 
-    proto = WebStorage.prototype;
+  /**
+   * Removes an item from storage.
+   *
+   * @this {WebStorage}
+   * @param {String} key The property name of the item to remove.
+   */
+  proto.removeItem = function (key) {
+    this.options.driver.removeItem(this.storeKeyPrefix + key);
+  };
 
-    /**
-     * Creates a new instance of WebStorage.
-     *
-     * @param {Object} options Object that contains config options to extend defaults.
-     * @return {Object} The WebStorage new instance.
-     */
-    proto.createInstance = function (options) {
-        return new WebStorage(options);
+  /**
+   * Removes all saved items from storage.
+   *
+   * @NOTE The above applies only in cases that a new instance is created and the "name" is set.
+   *       This is because the only way to tell if an item is saved by an instance is the prefix of the key which is the "name" property.
+   *       If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
+   * @this {WebStorage}
+   * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
+   */
+  proto.clear = function (clearAll) {
+    var driver = this.options.driver;
+    if (clearAll === true) {
+      driver.clear();
+    } else {
+      _iterateStorage(this, function (key) {
+        driver.removeItem(key);
+      });
+    }
+  };
+
+  /**
+   * Gets the list of all keys in the offline storage for a specific database.
+   * If "name" property is not set or set to '' (empty string), returns all keys in storage.
+   *
+   * @this {WebStorage}
+   * @return {Array} An array of all the keys that belong to a specific database.
+   */
+  proto.keys = function () {
+    var keysArr = [],
+      storeKeyPrefix = this.storeKeyPrefix;
+
+    _iterateStorage(this, function (key) {
+      keysArr.push(_str_removePrefix(key, storeKeyPrefix));
+    });
+    return keysArr;
+  };
+
+  /**
+   * Gets the number of keys in the datastore.
+   *
+   * @this {WebStorage}
+   * @return {Number} The number of keys in the datastore.
+   */
+  proto.length = function () {
+    var counter = 0;
+    _iterateStorage(this, function () {
+      counter += 1;
+    });
+    return counter;
+  };
+
+  /**
+   * Iterate over all value/key pairs in datastore.
+   *
+   * @this {WebStorage}
+   * @param {function} callback A callabck function to execute for each iteration.
+   */
+  proto.iterate = function (callback) {
+    var storeKeyPrefix = this.storeKeyPrefix;
+
+    _iterateStorage(this, function (key, value, iterationNumber) {
+      if (callback && callback(_str_removePrefix(key, storeKeyPrefix), JSON.parse(value), iterationNumber) === false) {
+        return false;
+      }
+    });
+  };
+
+  /**
+   * Display (approximately) the size for each key in datastore and the total size of all kesy in MB.
+   *
+   * @this {WebStorage}
+   * @return {Object<string,number>} An object with two properties that display the size for each key and the total size in MB.
+   */
+  proto.quota = function () {
+    var items = {},
+      totalSize = 0,
+      itemSize;
+
+    _iterateStorage(this, function (key, value) {
+      itemSize = ((value.length * 2) / 1024 / 1024);
+      totalSize += itemSize;
+      items[key] = itemSize;
+    });
+
+    return {
+      total: totalSize,
+      items: items
     };
+  };
 
-    /**
-     * Configures the instance of WebStorage with user's options that will extend the defaults.
-     *
-     * @this {WebStorage}
-     * @param {Object} options Object that contains config options to extend defaults.
-     */
-    proto.config = function (options) {
-        options = _obj_extend({}, defaultConfig, options);
-        if (options.name == null || _str_trim(options.name) === '') { // jshint ignore: line
-            throw 'You must use a valid name for the database.';
-        }
-        this.options = options;
-        this.storeKeyPrefix = _createKeyPrefix(this);
-    };
+  /**
+   * Checks if the driver of choice (localStorage || sessionStorage) is supported.
+   *
+   * @this {WebStorage}
+   * @return {Boolean} Returns true if Web Storage is supported else returns false.
+   */
+  proto.supported = function () {
+    return _isStorageSupported(this.options.driver);
+  };
 
-    /**
-     * Gets a saved item from localStorage or sessionStorage by its key.
-     *
-     * @this {WebStorage}
-     * @param {String} key The property name of the item to save.
-     * @return {*} Returns the saved item.
-     */
-    proto.getItem = function (key) {
-        var item = this.options.driver.getItem(this.storeKeyPrefix + key);
-        try {
-            return JSON.parse(item);
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    /**
-     * Saves an item to localStorage or sessionStorage.
-     *
-     * @this {WebStorage}
-     * @param {String} key The property name of teh item to save.
-     * @param {*} value The item to save to the selected storage.
-     * @return {*} Returns the saved item's value if save successful else throws error.
-     */
-    proto.setItem = function (key, value) {
-        var self = this;
-        try {
-            value = value == null ? null : value; // jshint ignore: line
-            key = self.storeKeyPrefix + key;
-            self.options.driver.setItem(key, JSON.stringify(value));
-            return value;
-        } catch (error) {
-            if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-                throw new Error('Could not save item due to quota exceed.');
-            } else {
-                throw error;
-            }
-        }
-    };
-
-    /**
-     * Removes an item from storage.
-     *
-     * @this {WebStorage}
-     * @param {String} key The property name of the item to remove.
-     */
-    proto.removeItem = function (key) {
-        this.options.driver.removeItem(this.storeKeyPrefix + key);
-    };
-
-    /**
-     * Removes all saved items from storage.
-     *
-     * @NOTE The above applies only in cases that a new instance is created and the "name" is set.
-     *       This is because the only way to tell if an item is saved by an instance is the prefix of the key which is the "name" property.
-     *       If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
-     * @this {WebStorage}
-     * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
-     */
-    proto.clear = function (clearAll) {
-        var driver = this.options.driver;
-        if (clearAll === true) {
-            driver.clear();
-        } else {
-            _iterateStorage(this, function (key) {
-                driver.removeItem(key);
-            });
-        }
-    };
-
-    /**
-     * Gets the list of all keys in the offline storage for a specific database.
-     * If "name" property is not set or set to '' (empty string), returns all keys in storage.
-     *
-     * @this {WebStorage}
-     * @return {Array} An array of all the keys that belong to a specific database.
-     */
-    proto.keys = function () {
-        var keysArr = [],
-            storeKeyPrefix = this.storeKeyPrefix;
-
-        _iterateStorage(this, function (key) {
-            keysArr.push(_str_removePrefix(key, storeKeyPrefix));
-        });
-        return keysArr;
-    };
-
-    /**
-     * Gets the number of keys in the datastore.
-     *
-     * @this {WebStorage}
-     * @return {Number} The number of keys in the datastore.
-     */
-    proto.length = function () {
-        var counter = 0;
-        _iterateStorage(this, function () {
-            counter += 1;
-        });
-        return counter;
-    };
-
-    /**
-     * Iterate over all value/key pairs in datastore.
-     *
-     * @this {WebStorage}
-     * @param {function} callback A callabck function to execute for each iteration.
-     */
-    proto.iterate = function (callback) {
-        var storeKeyPrefix = this.storeKeyPrefix;
-
-        _iterateStorage(this, function (key, value, iterationNumber) {
-            if (callback && callback(_str_removePrefix(key, storeKeyPrefix), JSON.parse(value), iterationNumber) === false) {
-                return false;
-            }
-        });
-    };
-
-    /**
-     * Display (approximately) the size for each key in datastore and the total size of all kesy in MB.
-     *
-     * @this {WebStorage}
-     * @return {Object<string,number>} An object with two properties that display the size for each key and the total size in MB.
-     */
-    proto.quota = function () {
-        var items = {},
-            totalSize = 0,
-            itemSize;
-
-        _iterateStorage(this, function (key, value) {
-            itemSize = ((value.length * 2) / 1024 / 1024);
-            totalSize += itemSize;
-            items[key] = itemSize;
-        });
-
-        return {
-            total: totalSize,
-            items: items
-        };
-    };
-
-    /**
-     * Checks if the driver of choice (localStorage || sessionStorage) is supported.
-     *
-     * @this {WebStorage}
-     * @return {Boolean} Returns true if Web Storage is supported else returns false.
-     */
-    proto.supported = function () {
-        return _isStorageSupported(this.options.driver);
-    };
-
-    return new WebStorage();
+  return new WebStorage();
 }));
