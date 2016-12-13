@@ -1,3 +1,7 @@
+# 1.1.0
+- Rewrite using ES2015 syntax.
+- Do not throw error on initialization if `localStorage` or `sessionStorage` is not supported or unavailable. User can still use the `supported` method to test for.
+
 # 1.0.0
 ### Features
 - Add `quota()` public API method.

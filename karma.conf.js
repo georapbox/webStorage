@@ -1,9 +1,4 @@
-// Karma configuration
-// Generated on Mon Sep 29 2014 14:09:05 GMT+0300 (GTB Daylight Time)
-
 module.exports = function (config) {
-  'use strict';
-
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -13,12 +8,8 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
 
     plugins: [
-      'karma-htmlfile-reporter',
       'karma-jasmine',
-      'karma-phantomjs-launcher',
-      'karma-firefox-launcher',
-      'karma-chrome-launcher',
-      'karma-ie-launcher'
+      'karma-phantomjs-launcher'
     ],
 
     // list of files / patterns to load in the browser
@@ -28,21 +19,16 @@ module.exports = function (config) {
     ],
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: {},
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: [
-      'progress',
-      'html'
-    ],
+    reporters: ['progress'],
 
     htmlReporter: {
       pageTitle: 'webStorage',
@@ -65,16 +51,7 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [
-      'PhantomJS'
-      //'Firefox',
-      //'Chrome'
-      //'IE7',
-      //'IE8',
-      //'IE9',
-      //'IE10',
-      //'IE'
-    ],
+    browsers: ['PhantomJS'],
 
     customLaunchers: {
       IE10: {
