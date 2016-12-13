@@ -1,25 +1,22 @@
 {
   "name": "webStorage",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A minimal Javascript wrapper to work with localStorage and sessionStorage",
-  "main": "lib/webStorage.js",
+  "main": "dist/webStorage.js",
   "scripts": {
     "build": "webpack --mode=build",
     "dev": "webpack --progress --colors --watch --mode=dev",
     "test": "karma start",
-    "ci": "npm run build; npm test"
+    "lint": "eslint src/**",
+    "ci": "npm run lint; npm test; npm run build;"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/georapbox/webStorage.git"
   },
   "keywords": [
-    "localStorage",
-    "sessionStorage",
-    "Storage",
-    "Offline Storage",
-    "Web Storage",
-    "DOM Storage"
+    "localStorage", "sessionStorage", "Storage",
+    "Offline Storage", "Web Storage", "DOM Storage"
   ],
   "author": "George Raptis <georapbox@gmail.com> (georapbox.github.io)",
   "license": "MIT",

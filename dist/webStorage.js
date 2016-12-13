@@ -1,7 +1,7 @@
 /*!
  * webStorage - A minimal Javascript wrapper to work with localStorage and sessionStorage
  * 
- * @version v1.0.0
+ * @version v1.1.0
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository git+https://github.com/georapbox/webStorage.git
@@ -119,10 +119,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _classCallCheck(this, WebStorage);
 	
 	    options = (0, _extend2.default)({}, defaultConfig, options);
-	
-	    if (!(0, _isStorageSupported2.default)(options.driver)) {
-	      throw new Error('Web Storage is not supported by your browser.');
-	    }
 	
 	    if (options.name == null || (0, _trim2.default)(options.name) === '') {
 	      throw 'You must use a valid name for the database.';
@@ -306,7 +302,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var storeKeyPrefix = this.storeKeyPrefix;
 	
 	      (0, _iterateStorage2.default)(this, function (key, value, iterationNumber) {
-	        if (callback && callback((0, _removePrefix2.default)(key, storeKeyPrefix), JSON.parse(value), iterationNumber) === false) {
+	        var _key = (0, _removePrefix2.default)(key, storeKeyPrefix);
+	        var _value = JSON.parse(value);
+	
+	        if (callback && callback(_key, _value, iterationNumber) === false) {
 	          return false;
 	        }
 	      });
@@ -338,10 +337,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	     * Checks if the driver of choice (localStorage || sessionStorage) is supported.
+	     * Checks if the driver of choice (localStorage or sessionStorage) is supported.
+	     * It will return `false` if storage is full.
 	     *
 	     * @this {WebStorage}
-	     * @return {Boolean} Returns true if Web Storage is supported else returns false.
+	     * @return {Boolean} Returns true if Web Storage is supported; otherwise false.
 	     */
 	
 	  }, {

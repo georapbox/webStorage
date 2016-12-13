@@ -25,10 +25,6 @@ class WebStorage {
   constructor(options) {
     options = extend({}, defaultConfig, options);
 
-    if (!isStorageSupported(options.driver)) {
-      throw new Error('Web Storage is not supported by your browser.');
-    }
-
     if (options.name == null || trim(options.name) === '') {
       throw 'You must use a valid name for the database.';
     }
@@ -183,7 +179,10 @@ class WebStorage {
     const storeKeyPrefix = this.storeKeyPrefix;
 
     iterateStorage(this, function (key, value, iterationNumber) {
-      if (callback && callback(removePrefix(key, storeKeyPrefix), JSON.parse(value), iterationNumber) === false) {
+      const _key = removePrefix(key, storeKeyPrefix);
+      const _value = JSON.parse(value);
+
+      if (callback && callback(_key, _value, iterationNumber) === false) {
         return false;
       }
     });
@@ -212,10 +211,11 @@ class WebStorage {
   }
 
   /**
-   * Checks if the driver of choice (localStorage || sessionStorage) is supported.
+   * Checks if the driver of choice (localStorage or sessionStorage) is supported.
+   * It will return `false` if storage is full.
    *
    * @this {WebStorage}
-   * @return {Boolean} Returns true if Web Storage is supported else returns false.
+   * @return {Boolean} Returns true if Web Storage is supported; otherwise false.
    */
   supported() {
     return isStorageSupported(this.options.driver);
