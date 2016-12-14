@@ -1,3 +1,4 @@
+import eventDispatcher from 'gr-event-dispatcher';
 import removePrefix from './util/remove-prefix';
 import trim from './util/trim';
 import extend from './util/extend';
@@ -13,6 +14,20 @@ import iterateStorage from './iterate-storage';
 const defaultConfig = {
   driver: localStorage,
   name: 'webStorage'
+};
+
+/**
+ * Holds the events names for reference
+ * @private
+ * @type {Object}
+ */
+const events = {
+  set: 'setItem',
+  set_err: 'setItemError',
+  get: 'getItem',
+  get_err: 'getItemError',
+  remove: 'removeItem',
+  clear: 'clear'
 };
 
 class WebStorage {
@@ -40,7 +55,9 @@ class WebStorage {
    * @return {Object} The WebStorage new instance.
    */
   createInstance(options) {
-    return new WebStorage(options);
+    const ws = new WebStorage(options);
+    eventDispatcher.apply(Object.getPrototypeOf(ws));
+    return ws;
   }
 
   /**
@@ -52,9 +69,11 @@ class WebStorage {
    */
   config(options) {
     options = extend({}, defaultConfig, options);
+
     if (options.name == null || trim(options.name) === '') {
       throw 'You must use a valid name for the database.';
     }
+
     this.options = options;
     this.storeKeyPrefix = createKeyPrefix(this);
   }
@@ -64,14 +83,18 @@ class WebStorage {
    *
    * @this {WebStorage}
    * @param {String} key The property name of the item to save.
+   * @throws {Error} Will throw if for some reason item cannot be retrieved from storage.
    * @return {*} Returns the saved item.
    */
   getItem(key) {
     const item = this.options.driver.getItem(this.storeKeyPrefix + key);
 
     try {
-      return JSON.parse(item);
+      const _item = JSON.parse(item);
+      this.dispatchEvent({type: events.get, data: _item});
+      return _item;
     } catch (error) {
+      this.dispatchEvent({type: events.get_err, data: error});
       throw error;
     }
   }
@@ -82,22 +105,19 @@ class WebStorage {
    * @this {WebStorage}
    * @param {String} key The property name of teh item to save.
    * @param {*} value The item to save to the selected storage.
-   * @return {*} Returns the saved item's value if save successful else throws error.
+   * @throws {Error} Will throw if for some reason item cannot be saved to storage.
+   * @return {*} Returns the saved item's value if save successful otherwise throws error.
    */
   setItem(key, value) {
-    const that = this;
-
     try {
       value = value == null ? null : value;
-      key = that.storeKeyPrefix + key;
-      that.options.driver.setItem(key, JSON.stringify(value));
+      key = this.storeKeyPrefix + key;
+      this.options.driver.setItem(key, JSON.stringify(value));
+      this.dispatchEvent({type: events.set, data: value});
       return value;
     } catch (error) {
-      if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-        throw new Error('Could not save item due to quota exceed.');
-      } else {
-        throw error;
-      }
+      this.dispatchEvent({type: events.set_err, data: error});
+      throw error;
     }
   }
 
@@ -109,6 +129,7 @@ class WebStorage {
    * @return {undefined}
    */
   removeItem(key) {
+    this.dispatchEvent({type: events.remove, data: key});
     this.options.driver.removeItem(this.storeKeyPrefix + key);
   }
 
@@ -132,6 +153,8 @@ class WebStorage {
         driver.removeItem(key);
       });
     }
+
+    this.dispatchEvent({type: events.clear});
   }
 
   /**

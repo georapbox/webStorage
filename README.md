@@ -204,6 +204,39 @@ webStorage.length(); // -> 0
 ```
 
 
+## Events
+
+webStorage instances emit custom events the user can subscribe on:
+
+- `setItem`: When an item is saved in storage.
+- `setItemError`: When there is an error saving item to storage.
+- `getItem`: When an item is retrieved from storage.
+- `getItemError`: When there is an error retrieving an item from storage.
+- `removeItem`: When an item is removed from storage.
+- `clear`: When all items from a database are removed at once.
+
+### Example
+
+```js
+const ls = webStorage.createInstance({
+  name: 'MyApp'
+});
+
+function onItemSave(event) {
+  // ...do something with event
+}
+
+// Subscribe to setItem event
+ls.addEventListener('setItem', onItemSave);
+
+// Unsubscribe to setItem event
+ls.removeEventListener('setItem', onItemSave);
+
+// Check if the target object has a listener registered on for specific event type
+ls.hasEventListener('setItem', onItemSave);
+```
+
+
 ## Build for development
 
 ```bash

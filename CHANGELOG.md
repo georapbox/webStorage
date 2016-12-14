@@ -1,3 +1,6 @@
+# 1.2.0
+- Emit custom events on specific operations.
+
 # 1.1.0
 - Rewrite using ES2015 syntax.
 - Do not throw error on initialization if `localStorage` or `sessionStorage` is not supported or unavailable. User can still use the `supported` method to test for.

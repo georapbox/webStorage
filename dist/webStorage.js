@@ -70,6 +70,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _grEventDispatcher = __webpack_require__(9);
+	
+	var _grEventDispatcher2 = _interopRequireDefault(_grEventDispatcher);
+	
 	var _removePrefix = __webpack_require__(1);
 	
 	var _removePrefix2 = _interopRequireDefault(_removePrefix);
@@ -108,6 +112,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  name: 'webStorage'
 	};
 	
+	var events = {
+	  set: 'setItem',
+	  set_err: 'setItemError',
+	  get: 'getItem',
+	  get_err: 'getItemError',
+	  remove: 'removeItem',
+	  clear: 'clear'
+	};
+	
 	var WebStorage = function () {
 	  /**
 	   * WebStorage constructor
@@ -139,7 +152,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(WebStorage, [{
 	    key: 'createInstance',
 	    value: function createInstance(options) {
-	      return new WebStorage(options);
+	      var ws = new WebStorage(options);
+	      _grEventDispatcher2.default.apply(Object.getPrototypeOf(ws));
+	      return ws;
 	    }
 	
 	    /**
@@ -154,9 +169,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'config',
 	    value: function config(options) {
 	      options = (0, _extend2.default)({}, defaultConfig, options);
+	
 	      if (options.name == null || (0, _trim2.default)(options.name) === '') {
 	        throw 'You must use a valid name for the database.';
 	      }
+	
 	      this.options = options;
 	      this.storeKeyPrefix = (0, _createKeyPrefix2.default)(this);
 	    }
@@ -166,6 +183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @this {WebStorage}
 	     * @param {String} key The property name of the item to save.
+	     * @throws {Error} Will throw if for some reason item cannot be retrieved from storage.
 	     * @return {*} Returns the saved item.
 	     */
 	
@@ -175,8 +193,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var item = this.options.driver.getItem(this.storeKeyPrefix + key);
 	
 	      try {
-	        return JSON.parse(item);
+	        var _item = JSON.parse(item);
+	        this.dispatchEvent({ type: events.get, data: _item });
+	        return _item;
 	      } catch (error) {
+	        this.dispatchEvent({ type: events.get_err, data: error });
 	        throw error;
 	      }
 	    }
@@ -187,25 +208,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @this {WebStorage}
 	     * @param {String} key The property name of teh item to save.
 	     * @param {*} value The item to save to the selected storage.
-	     * @return {*} Returns the saved item's value if save successful else throws error.
+	     * @throws {Error} Will throw if for some reason item cannot be saved to storage.
+	     * @return {*} Returns the saved item's value if save successful otherwise throws error.
 	     */
 	
 	  }, {
 	    key: 'setItem',
 	    value: function setItem(key, value) {
-	      var that = this;
-	
 	      try {
 	        value = value == null ? null : value;
-	        key = that.storeKeyPrefix + key;
-	        that.options.driver.setItem(key, JSON.stringify(value));
+	        key = this.storeKeyPrefix + key;
+	        this.options.driver.setItem(key, JSON.stringify(value));
+	        this.dispatchEvent({ type: events.set, data: value });
 	        return value;
 	      } catch (error) {
-	        if (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-	          throw new Error('Could not save item due to quota exceed.');
-	        } else {
-	          throw error;
-	        }
+	        this.dispatchEvent({ type: events.set_err, data: error });
+	        throw error;
 	      }
 	    }
 	
@@ -220,6 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'removeItem',
 	    value: function removeItem(key) {
+	      this.dispatchEvent({ type: events.remove, data: key });
 	      this.options.driver.removeItem(this.storeKeyPrefix + key);
 	    }
 	
@@ -246,6 +265,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          driver.removeItem(key);
 	        });
 	      }
+	
+	      this.dispatchEvent({ type: events.clear });
 	    }
 	
 	    /**
@@ -551,6 +572,178 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return str.substr(0, prefix.length) === prefix;
 	}
 	module.exports = exports["default"];
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+	 * @module eventDispatcher
+	 * @desc JavaScript events for custom objects
+	 */
+	(function (name, context, definition) {
+	  'use strict';
+	
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (definition), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof module !== 'undefined' && module.exports) {
+	    module.exports = definition();
+	  } else {
+	    context[name] = definition(name, context);
+	  }
+	}('eventDispatcher', this, function (name) {
+	  'use strict';
+	
+	  var errors = {
+	    nonExtensible: 'Cannot apply "' + name + '" on an non extensible object'
+	  };
+	
+	  var eventDispatcherPrototype = {
+	    /**
+	     * Registers the specified `listener` on the event target it's called on.
+	     *
+	     * @function addEventListener
+	     * @param {String} type A string representing the event type to listen for.
+	     * @param {function} listener A function to be executed when an event of the specified `type` occurs.
+	     * @throws {TypeError} If the object that `eventDispatcher` is applied to is not extensible.
+	     * @return {Object} The `eventDispatcher` object.
+	     */
+	    addEventListener: function (type, listener) {
+	      var listeners;
+	
+	      if (!Object.isExtensible(this)) {
+	        throw new TypeError(errors.nonExtensible);
+	      }
+	
+	      if (typeof this._listeners === 'undefined') {
+	        this._listeners = {};
+	      }
+	
+	      listeners = this._listeners;
+	
+	      if (typeof listeners[type] === 'undefined') {
+	        listeners[type] = [];
+	      }
+	
+	      if (listeners[type].indexOf(listener) === - 1) {
+	        listeners[type].push(listener);
+	      }
+	
+	      return this;
+	    },
+	
+	    /**
+	     * Checks if the target object has a `listener` registered on for specific event `type`..
+	     *
+	     * @function hasEventListener
+	     * @param {String} type A string representing the event type.
+	     * @param {function} listener The event listener to check if registered for the specified event `type`.
+	     * @return {Boolean} True if target object has `listener` registered for specific event `type`; otherwise false.
+	     */
+	    hasEventListener: function (type, listener) {
+	      var listeners;
+	
+	      if (typeof this._listeners === 'undefined') {
+	        return false;
+	      }
+	
+	      listeners = this._listeners;
+	
+	      if (typeof listeners[type] !== 'undefined' && listeners[type].indexOf(listener) !== - 1) {
+	        return true;
+	      }
+	
+	      return false;
+	    },
+	
+	    /**
+	     * Removes the previously registered event `listener` from the event target.
+	     *
+	     * @function removeEventListener
+	     * @param {String} type A string representing the event type to remove.
+	     * @param {function} listener The event listener function to remove from the event target.
+	     * @return {Object} The `eventDispatcher` object.
+	     */
+	    removeEventListener: function (type, listener) {
+	      var listeners, listenerArray, index;
+	
+	      if (typeof this._listeners === 'undefined') {
+	        return;
+	      }
+	
+	      listeners = this._listeners;
+	      listenerArray = listeners[type];
+	
+	      if (typeof listenerArray !== 'undefined') {
+	        index = listenerArray.indexOf(listener);
+	
+	        if (index !== - 1) {
+	          listenerArray.splice(index, 1);
+	        }
+	      }
+	
+	      return this;
+	    },
+	
+	    /**
+	     * Dispatches an event at the specified event target.
+	     *
+	     * @function dispatchEvent
+	     * @param {Object} event The event object to be dispatched.
+	     * @return {Object} The `eventDispatcher` object.
+	     */
+	    dispatchEvent: function (event) {
+	      var listeners, listenerArray, i, length;
+	
+	      if (typeof this._listeners === 'undefined') {
+	        return;
+	      }
+	
+	      listeners = this._listeners;
+	      listenerArray = listeners[event.type];
+	
+	      if (typeof listenerArray !== 'undefined') {
+	        event.target = this;
+	
+	        length = listenerArray.length;
+	
+	        for (i = 0; i < length; i += 1) {
+	          listenerArray[i].call(this, event);
+	        }
+	      }
+	
+	      return this;
+	    }
+	  };
+	
+	  var eventDispatcher = Object.create(eventDispatcherPrototype, {
+	    apply: {
+	      /**
+	       * Applies the `eventDispatcher` prototype methods to the event target.
+	       *
+	       * @function apply
+	       * @param {Object} object The event target object.
+	       * @throws {TypeError} If the object that `eventDispatcher` is applied to is not extensible.
+	       * @return {Object} The `eventDispatcher` object.
+	       */
+	      value: function applyEventDispatcher(object) {
+	        if (!Object.isExtensible(object)) {
+	          throw new TypeError(errors.nonExtensible);
+	        }
+	
+	        object.addEventListener = eventDispatcherPrototype.addEventListener;
+	        object.hasEventListener = eventDispatcherPrototype.hasEventListener;
+	        object.removeEventListener = eventDispatcherPrototype.removeEventListener;
+	        object.dispatchEvent = eventDispatcherPrototype.dispatchEvent;
+	
+	        return this;
+	      }
+	    }
+	  });
+	
+	  return eventDispatcher;
+	}));
+
 
 /***/ }
 /******/ ])
