@@ -13,12 +13,6 @@ webStorage is a minimal Javascript library that improves the way you work with `
 $ npm install webStorage
 ```
 
-### Browser
-
-```html
-<script src="node_modules/webStorage/dist/webStorage.min.js"></script>
-```
-
 
 ## Data API
 
