@@ -46,6 +46,7 @@ class WebStorage {
 
     this.options = options;
     this.storeKeyPrefix = createKeyPrefix(this);
+    eventDispatcher.apply(Object.getPrototypeOf(this));
   }
 
   /**
@@ -55,9 +56,7 @@ class WebStorage {
    * @return {Object} The WebStorage new instance.
    */
   createInstance(options) {
-    const ws = new WebStorage(options);
-    eventDispatcher.apply(Object.getPrototypeOf(ws));
-    return ws;
+    return new WebStorage(options);
   }
 
   /**

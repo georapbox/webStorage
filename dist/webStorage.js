@@ -1,7 +1,7 @@
 /*!
  * webStorage - A minimal Javascript wrapper to work with localStorage and sessionStorage
  * 
- * @version v1.1.0
+ * @version v1.2.1
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository git+https://github.com/georapbox/webStorage.git
@@ -70,31 +70,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _grEventDispatcher = __webpack_require__(9);
+	var _grEventDispatcher = __webpack_require__(1);
 	
 	var _grEventDispatcher2 = _interopRequireDefault(_grEventDispatcher);
 	
-	var _removePrefix = __webpack_require__(1);
+	var _removePrefix = __webpack_require__(2);
 	
 	var _removePrefix2 = _interopRequireDefault(_removePrefix);
 	
-	var _trim = __webpack_require__(2);
+	var _trim = __webpack_require__(3);
 	
 	var _trim2 = _interopRequireDefault(_trim);
 	
-	var _extend = __webpack_require__(3);
+	var _extend = __webpack_require__(4);
 	
 	var _extend2 = _interopRequireDefault(_extend);
 	
-	var _isStorageSupported = __webpack_require__(4);
+	var _isStorageSupported = __webpack_require__(5);
 	
 	var _isStorageSupported2 = _interopRequireDefault(_isStorageSupported);
 	
-	var _createKeyPrefix = __webpack_require__(5);
+	var _createKeyPrefix = __webpack_require__(6);
 	
 	var _createKeyPrefix2 = _interopRequireDefault(_createKeyPrefix);
 	
-	var _iterateStorage = __webpack_require__(6);
+	var _iterateStorage = __webpack_require__(7);
 	
 	var _iterateStorage2 = _interopRequireDefault(_iterateStorage);
 	
@@ -112,6 +112,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  name: 'webStorage'
 	};
 	
+	/**
+	 * Holds the events names for reference
+	 * @private
+	 * @type {Object}
+	 */
 	var events = {
 	  set: 'setItem',
 	  set_err: 'setItemError',
@@ -139,6 +144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    this.options = options;
 	    this.storeKeyPrefix = (0, _createKeyPrefix2.default)(this);
+	    _grEventDispatcher2.default.apply(Object.getPrototypeOf(this));
 	  }
 	
 	  /**
@@ -152,9 +158,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(WebStorage, [{
 	    key: 'createInstance',
 	    value: function createInstance(options) {
-	      var ws = new WebStorage(options);
-	      _grEventDispatcher2.default.apply(Object.getPrototypeOf(ws));
-	      return ws;
+	      return new WebStorage(options);
 	    }
 	
 	    /**
@@ -380,201 +384,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = removePrefix;
-	function removePrefix(str, prefix) {
-	  return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
-	}
-	module.exports = exports["default"];
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = trim;
-	function trim(str) {
-	  return String.prototype.trim ? str.trim() : str.replace(/(^\s*|\s*$)/g, '');
-	}
-	module.exports = exports['default'];
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = _obj_extend;
-	function _obj_extend() {
-	  for (var i = 1, l = arguments.length; i < l; i++) {
-	    for (var key in arguments[i]) {
-	      if ({}.hasOwnProperty.call(arguments[i], key)) {
-	        if (arguments[i][key] && arguments[i][key].constructor && arguments[i][key].constructor === Object) {
-	          arguments[0][key] = arguments[0][key] || {};
-	          _obj_extend(arguments[0][key], arguments[i][key]);
-	        } else {
-	          arguments[0][key] = arguments[i][key];
-	        }
-	      }
-	    }
-	  }
-	  return arguments[0];
-	}
-	module.exports = exports["default"];
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/**
-	 * Helper function to check if Web Storage is supported.
-	 *
-	 * @param {Object} storageType The type of the offline storage (localStorage || sessionStorage).
-	 * @return {Boolean} Returns true if supported else returns false.
-	 */
-	function isStorageSupported(storageType) {
-	  var dummy = 'storage.dummy';
-	
-	  try {
-	    storageType.setItem(dummy, dummy);
-	    storageType.removeItem(dummy);
-	    return true;
-	  } catch (error) {
-	    return false;
-	  }
-	}
-	
-	exports.default = isStorageSupported;
-	module.exports = exports['default'];
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/**
-	 * Helper function that creates the storage key's prefix.
-	 *
-	 * @param {Object} instance The WebStorage instance.
-	 * @return {String} Returns the keys's prefix.
-	 */
-	function createKeyPrefix(instance) {
-	  return instance.options.name + "/";
-	}
-	
-	exports.default = createKeyPrefix;
-	module.exports = exports["default"];
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _keyBelongsToDb = __webpack_require__(7);
-	
-	var _keyBelongsToDb2 = _interopRequireDefault(_keyBelongsToDb);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Helper function that iterates over storage keys.
-	 * Early exit by returning false inside iterator callback.
-	 *
-	 * @param {Object} instance The WebStorage instance.
-	 * @param {function} callback A function to be executed for each iteration.
-	 * @return {undefined}
-	 */
-	function iterateStorage(instance, callback) {
-	  var driver = instance.options.driver;
-	  var iterationNumber = 0;
-	
-	  Object.keys(driver).forEach(function (key) {
-	    if ((0, _keyBelongsToDb2.default)(instance, key)) {
-	      if (callback(key, driver[key], ++iterationNumber) === false) {
-	        return false;
-	      }
-	    }
-	  });
-	}
-	
-	exports.default = iterateStorage;
-	module.exports = exports['default'];
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _beginsWith = __webpack_require__(8);
-	
-	var _beginsWith2 = _interopRequireDefault(_beginsWith);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Helper function that checks if a key belongs to a database.
-	 * Check is done using the keys' prefix.
-	 *
-	 * @param {Object} instance The WebStorage instance.
-	 * @param {String} key The key to check if belongs to a database.
-	 * @return {Boolean} Returns true if key belongs to a database else returns false.
-	 */
-	function keyBelongsToDB(instance, key) {
-	  return (0, _beginsWith2.default)(key, instance.storeKeyPrefix);
-	}
-	
-	exports.default = keyBelongsToDB;
-	module.exports = exports['default'];
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = beginsWith;
-	function beginsWith(str, prefix) {
-	  return str.substr(0, prefix.length) === prefix;
-	}
-	module.exports = exports["default"];
-
-/***/ },
-/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -744,6 +553,201 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return eventDispatcher;
 	}));
 
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = removePrefix;
+	function removePrefix(str, prefix) {
+	  return str.indexOf(prefix) === 0 ? str.slice(prefix.length) : str;
+	}
+	module.exports = exports["default"];
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = trim;
+	function trim(str) {
+	  return String.prototype.trim ? str.trim() : str.replace(/(^\s*|\s*$)/g, '');
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = _obj_extend;
+	function _obj_extend() {
+	  for (var i = 1, l = arguments.length; i < l; i++) {
+	    for (var key in arguments[i]) {
+	      if ({}.hasOwnProperty.call(arguments[i], key)) {
+	        if (arguments[i][key] && arguments[i][key].constructor && arguments[i][key].constructor === Object) {
+	          arguments[0][key] = arguments[0][key] || {};
+	          _obj_extend(arguments[0][key], arguments[i][key]);
+	        } else {
+	          arguments[0][key] = arguments[i][key];
+	        }
+	      }
+	    }
+	  }
+	  return arguments[0];
+	}
+	module.exports = exports["default"];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * Helper function to check if Web Storage is supported.
+	 *
+	 * @param {Object} storageType The type of the offline storage (localStorage || sessionStorage).
+	 * @return {Boolean} Returns true if supported else returns false.
+	 */
+	function isStorageSupported(storageType) {
+	  var dummy = 'storage.dummy';
+	
+	  try {
+	    storageType.setItem(dummy, dummy);
+	    storageType.removeItem(dummy);
+	    return true;
+	  } catch (error) {
+	    return false;
+	  }
+	}
+	
+	exports.default = isStorageSupported;
+	module.exports = exports['default'];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * Helper function that creates the storage key's prefix.
+	 *
+	 * @param {Object} instance The WebStorage instance.
+	 * @return {String} Returns the keys's prefix.
+	 */
+	function createKeyPrefix(instance) {
+	  return instance.options.name + "/";
+	}
+	
+	exports.default = createKeyPrefix;
+	module.exports = exports["default"];
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _keyBelongsToDb = __webpack_require__(8);
+	
+	var _keyBelongsToDb2 = _interopRequireDefault(_keyBelongsToDb);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Helper function that iterates over storage keys.
+	 * Early exit by returning false inside iterator callback.
+	 *
+	 * @param {Object} instance The WebStorage instance.
+	 * @param {function} callback A function to be executed for each iteration.
+	 * @return {undefined}
+	 */
+	function iterateStorage(instance, callback) {
+	  var driver = instance.options.driver;
+	  var iterationNumber = 0;
+	
+	  Object.keys(driver).forEach(function (key) {
+	    if ((0, _keyBelongsToDb2.default)(instance, key)) {
+	      if (callback(key, driver[key], ++iterationNumber) === false) {
+	        return false;
+	      }
+	    }
+	  });
+	}
+	
+	exports.default = iterateStorage;
+	module.exports = exports['default'];
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _beginsWith = __webpack_require__(9);
+	
+	var _beginsWith2 = _interopRequireDefault(_beginsWith);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Helper function that checks if a key belongs to a database.
+	 * Check is done using the keys' prefix.
+	 *
+	 * @param {Object} instance The WebStorage instance.
+	 * @param {String} key The key to check if belongs to a database.
+	 * @return {Boolean} Returns true if key belongs to a database else returns false.
+	 */
+	function keyBelongsToDB(instance, key) {
+	  return (0, _beginsWith2.default)(key, instance.storeKeyPrefix);
+	}
+	
+	exports.default = keyBelongsToDB;
+	module.exports = exports['default'];
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = beginsWith;
+	function beginsWith(str, prefix) {
+	  return str.substr(0, prefix.length) === prefix;
+	}
+	module.exports = exports["default"];
 
 /***/ }
 /******/ ])

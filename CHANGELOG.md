@@ -1,3 +1,7 @@
+# 1.2.1
+- Fix bug that caused custom events not to emit when using the default instance of webStorage.
+- Keep devDependancies up to date.
+
 # 1.2.0
 - Emit custom events on specific operations.
 
