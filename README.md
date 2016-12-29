@@ -1,8 +1,11 @@
-[![Build Status](https://travis-ci.org/georapbox/webStorage.svg?branch=master)](https://travis-ci.org/georapbox/webStorage) [![Dependencies](https://david-dm.org/georapbox/webStorage.svg?theme=shields.io)](https://david-dm.org/georapbox/webStorage) [![devDependency Status](https://david-dm.org/georapbox/webStorage/dev-status.svg)](https://david-dm.org/georapbox/webStorage#info=devDependencies)
-
 # webStorage
 
-webStorage is a minimal Javascript library that improves the way you work with `localStorage` or `sessionStorage`.
+A minimal Javascript library that improves the way you work with `localStorage` or `sessionStorage`.
+
+[![Build Status](https://travis-ci.org/georapbox/webStorage.svg?branch=master)](https://travis-ci.org/georapbox/webStorage)
+[![npm version](https://badge.fury.io/js/webStorage.svg)](http://badge.fury.io/js/webStorage)
+[![Dependencies](https://david-dm.org/georapbox/webStorage.svg?theme=shields.io)](https://david-dm.org/georapbox/webStorage)
+[![devDependency Status](https://david-dm.org/georapbox/webStorage/dev-status.svg)](https://david-dm.org/georapbox/webStorage#info=devDependencies)
 
 
 ## Install
