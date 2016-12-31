@@ -1,3 +1,5 @@
 node_modules/*
 src/util/**
 dist/**
+webpack.config.js
+karma.conf.js
