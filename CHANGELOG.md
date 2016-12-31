@@ -1,3 +1,7 @@
+# 1.2.2
+- Update ESLint rules.
+- Add codeclimate configuration.
+
 # 1.2.1
 - Fix bug that caused custom events not to emit when using the default instance of webStorage.
 - Keep devDependancies up to date.

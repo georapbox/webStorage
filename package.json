@@ -1,6 +1,6 @@
 {
   "name": "webStorage",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A minimal Javascript wrapper to work with localStorage and sessionStorage",
   "main": "dist/webStorage.js",
   "scripts": {
