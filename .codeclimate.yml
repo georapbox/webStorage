@@ -2,16 +2,16 @@ engines:
   rubocop:
     enabled: false
   golint:
-   	enabled: false
+    enabled: false
   eslint:
     enabled: true
     channel: "eslint-3"
   csslint:
     enabled: false
   duplication:
-  	enabled: true
+    enabled: true
     config:
-    	languages:
+      languages:
       - javascript
 ratings:
   paths:
