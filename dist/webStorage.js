@@ -1,7 +1,7 @@
 /*!
  * webStorage - A minimal Javascript wrapper to work with localStorage and sessionStorage
  * 
- * @version v1.2.1
+ * @version v1.2.3
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository git+https://github.com/georapbox/webStorage.git

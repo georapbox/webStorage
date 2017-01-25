@@ -1,3 +1,6 @@
+# 1.2.3
+- Change the way to update dependancies using the caret `^` strategy.
+
 # 1.2.2
 - Update ESLint rules.
 - Add codeclimate configuration.
