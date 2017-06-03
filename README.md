@@ -252,3 +252,7 @@ $ npm run build
 ```bash
 $ npm test
 ```
+
+## License
+
+[The MIT License (MIT)](https://georapbox.mit-license.org/@2016)
