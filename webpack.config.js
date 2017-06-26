@@ -3,7 +3,7 @@
 const webpack = require('webpack');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const path = require('path');
-const env = require('yargs').argv.mode;
+const env = require('yargs').argv.env;
 const pkg = require('./package.json');
 
 const libraryName = 'webStorage';
@@ -38,17 +38,18 @@ const config = {
     umdNamedDefine: true
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /(\.jsx|\.js)$/,
-        loader: 'babel',
+        loader: 'babel-loader',
+        exclude: /(node_modules|bower_components)/
+      },
+      {
+        test: /(\.jsx|\.js)$/,
+        loader: 'eslint-loader',
         exclude: /(node_modules|bower_components)/
       }
     ]
-  },
-  resolve: {
-    root: path.resolve('./src'),
-    extensions: ['', '.js']
   },
   plugins: plugins
 };

@@ -3,8 +3,11 @@
 A minimal Javascript library that improves the way you work with `localStorage` or `sessionStorage`.
 
 [![Build Status](https://travis-ci.org/georapbox/webStorage.svg?branch=master)](https://travis-ci.org/georapbox/webStorage)
-[![Code Climate](https://codeclimate.com/github/georapbox/webStorage/badges/gpa.svg)](https://codeclimate.com/github/georapbox/webStorage)
 [![npm version](https://badge.fury.io/js/webStorage.svg)](http://badge.fury.io/js/webStorage)
+[![npm downloads](https://img.shields.io/npm/dt/webStorage.svg)](http://badge.fury.io/js/webStorage)
+[![npm license](https://img.shields.io/npm/l/webStorage.svg)](http://badge.fury.io/js/webStorage)
+[![Code Climate](https://codeclimate.com/github/georapbox/webStorage/badges/gpa.svg)](https://codeclimate.com/github/georapbox/webStorage)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Dependencies](https://david-dm.org/georapbox/webStorage.svg?theme=shields.io)](https://david-dm.org/georapbox/webStorage)
 [![devDependency Status](https://david-dm.org/georapbox/webStorage/dev-status.svg)](https://david-dm.org/georapbox/webStorage#info=devDependencies)
 
