@@ -4,7 +4,7 @@
  * @version v1.2.4
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
- * @repository git+https://github.com/georapbox/webStorage.git
+ * @repository https://github.com/georapbox/webStorage.git
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
