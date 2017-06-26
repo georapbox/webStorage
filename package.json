@@ -7,6 +7,7 @@
     "build": "webpack --env=build",
     "dev": "webpack --progress --colors --env=dev",
     "watch": "webpack --progress --colors --watch --env=dev",
+    "prepublish": "npm run dev & npm run build",
     "test": "karma start",
     "lint": "eslint src/**",
     "ci": "npm run lint; npm test; npm run build;"
