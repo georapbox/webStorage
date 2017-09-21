@@ -1,3 +1,14 @@
+# 2.0.0
+## Breaking changes
+- `clear` method no longer supports `clearAll` argument that used to flush everything in storage no matter the database name. If you need to do that use the native API of `Storage`, eg. `localStorage.clear()`
+- `setItem`, `getItem` and `removeItem` methods no longer throw errors explicitly. You can still catch any errors registering on the following events: `setItemError`, `getItemError` and `removeItemError` respectively.
+- `iteratorCallback` function no longer accepts `iterationNumber` as a third argument.
+
+## Other updates
+- `removeItemError` event is now emitted if there is an error while removing an item from storage.
+- `config`, `setItem`, `removeItem` and `iterate` methods now return an instance reference for chaining purposes.
+- Keep devDependencies up to date.
+
 # 1.2.4
 - Keep dependencies up to date
 - eslint loader for webpack

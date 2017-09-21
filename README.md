@@ -20,6 +20,33 @@ A minimal Javascript library that improves the way you work with `localStorage` 
 $ npm install webStorage
 ```
 
+## Setup API
+
+### config
+
+```js
+config(options)
+```
+
+Set and persist webStorage options. This must be called before any other calls to webStorage are made. The following options can be set:
+
+|Option|Type|Description|Default value|
+|------|----|-----------|-------------|
+|**driver**|`Object`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|`localStorage`|
+|**name**|`String`|The name of the database. This is used as prefix for all keys stored in the offline storage.|`webStorage`|
+
+Will throw `Error` if `options.name` is not a valid, non-empty string.
+
+
+### createInstance
+
+```js
+createInstance([options])
+```
+
+Creates a new instance of the webStorage. The `options` can be the same as `config(options)`.  
+Will throw `Error` if `options.name` is not a valid, non-empty string.
+
 
 ## Data API
 
@@ -57,14 +84,10 @@ Removes the value of a key from the offline store.
 ### clear
 
 ```js
-clear([clearAll])
+clear()
 ```
 
-> Use this method with caution.
-
-If `clearAll` is set to `true`, removes every key from the storage, returning it to a blank slate.
-
-If `clearAll` is set to `false` or any other falsy value it will remove only the keys that belong to the specific databse.
+Removes all saved items from storage.
 
 ### keys
 
@@ -92,11 +115,8 @@ Iterate over all value/key pairs in datastore.
 
 `iteratorCallback` is called once for each pair, with the following arguments:
 
-- key
-- value
-- iterationNumber (one-based number)
-
-You can early exit from iterator by returning `false` inside `iteratorCallback`.
+- `{String} key` The key of the saved item.
+- `{*} value` The value of the saved item.
 
 ### quota
 
@@ -112,32 +132,7 @@ Approximately display the size for each key in datastore and the total size of a
 supported()
 ```
 
-Checks if the driver of choice (`localStorage` or `sessionStorage`) is supported by the browser. It will return `false` if storage is full.
-
-
-## Settings API
-
-### config
-
-```js
-config(options)
-```
-
-Set and persist webStorage options. This must be called before any other calls to webStorage are made. The following options can be set:
-
-|Option|Type|Description|Default value|
-|------|----|-----------|-------------|
-|**driver**|`Object`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|`localStorage`|
-|**name**|`String`|The name of the database. This is used as prefix for all keys stored in the offline storage.|`webStorage`|
-
-
-### createInstance
-
-```js
-createInstance([options])
-```
-
-Creates a new instance of the webStorage. The `options` can be the same as `config(options)`.
+Checks if the driver of choice (`localStorage` or `sessionStorage`) is supported by the browser. It may return `false` if storage is full.
 
 
 ## Usage Example
@@ -152,17 +147,19 @@ const users = [
 const companies = ['Google', 'Yahoo', 'Microsoft', 'Mozilla'];
 
 /* Saving some items with the default configuration */
-webStorage.setItem('user', users[0]);
-webStorage.setItem('company', companies[0]);
+webStorage
+  .setItem('user', users[0]);
+  .setItem('company', companies[0]);
 
 /* Create a new instance and save some items */
 const ls = webStorage.createInstance({
   name: 'MyApp'
 });
 
-ls.setItem('user', users[1]);
-ls.setItem('company', companies[2]);
-ls.setItem('dummyKey', 100);
+ls
+  .setItem('user', users[1]);
+  .setItem('company', companies[2]);
+  .setItem('dummyKey', 100);
 
 /* Retrieving saved items */
 webStorage.getItem('user'); // -> Object { id: 1, name: "John Doe", email: "johndoe@gmail.com" }
@@ -180,8 +177,8 @@ webStorage.keys(); // -> Array [ "company", "user" ]
 ls.keys(); // -> Array [ "dummyKey", "company", "user" ]
 
 /* Itereate over datastores */
-ls.iterate(function (key, value, iterNum) {
-  console.log(iterNum, ':', key, ':', value);
+ls.iterate(function (key, value) {
+  console.log(key, ':', value);
 });
 // -> 1 : dummyKey : 100
 // -> 2 : company : Microsoft
@@ -199,9 +196,6 @@ ls.length(); // -> 3 (still same as before)
 ls.clear(); /* Clear only the "MyApp" datastore */
 ls.length(); // -> 0
 ls.keys(); // -> Array []
-webStorage.length(); // -> 1
-ls.clear(true); /* Flush away everything in localStorage */
-webStorage.length(); // -> 0
 ```
 
 
@@ -214,7 +208,8 @@ webStorage instances emit custom events the user can subscribe on:
 - `getItem`: When an item is retrieved from storage.
 - `getItemError`: When there is an error retrieving an item from storage.
 - `removeItem`: When an item is removed from storage.
-- `clear`: When all items from a database are removed at once.
+- `removeItemError`: When there is an error removing an item from storage.
+- `clear`: When all items from a database are removed.
 
 ### Example
 
