@@ -1,10 +1,12 @@
 import eventDispatcher from 'gr-event-dispatcher';
 import removePrefix from './util/remove-prefix';
 import trim from './util/trim';
-import extend from './util/extend';
+import assign from './util/assign';
 import isStorageSupported from './is-storage-supported';
 import createKeyPrefix from './create-key-prefix';
 import iterateStorage from './iterate-storage';
+
+const dbNameError = 'You must use a valid name for the database.';
 
 /**
  * Default webStorage configuration
@@ -27,6 +29,7 @@ const events = {
   get: 'getItem',
   get_err: 'getItemError',
   remove: 'removeItem',
+  remove_err: 'removeItemError',
   clear: 'clear'
 };
 
@@ -36,12 +39,13 @@ class WebStorage {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
+   * @throws {Error} If a `options.name` is not a valid non-empty string.
    */
   constructor(options) {
-    options = extend({}, defaultConfig, options);
+    options = assign({}, defaultConfig, options);
 
-    if (options.name == null || trim(options.name) === '') {
-      throw 'You must use a valid name for the database.';
+    if (typeof options.name !== 'string' || trim(options.name) === '') {
+      throw new Error(dbNameError);
     }
 
     this.options = options;
@@ -53,7 +57,7 @@ class WebStorage {
    * Creates a new instance of WebStorage.
    *
    * @param {Object} options Object that contains config options to extend defaults.
-   * @return {Object} The WebStorage new instance.
+   * @return {WebStorage} A new WebStorage instance.
    */
   createInstance(options) {
     return new WebStorage(options);
@@ -64,25 +68,26 @@ class WebStorage {
    *
    * @this {WebStorage}
    * @param {Object} options Object that contains config options to extend defaults.
-   * @return {undefined}
+   * @throws {Error} If a `options.name` is not a valid non-empty string.
+   * @return {WebStorage} The WebStorage instance for convenience and chaining.
    */
   config(options) {
-    options = extend({}, defaultConfig, options);
+    options = assign({}, defaultConfig, options);
 
-    if (options.name == null || trim(options.name) === '') {
-      throw 'You must use a valid name for the database.';
+    if (typeof options.name !== 'string' || trim(options.name) === '') {
+      throw new Error(dbNameError);
     }
 
     this.options = options;
     this.storeKeyPrefix = createKeyPrefix(this);
+    return this;
   }
 
   /**
-   * Gets a saved item from localStorage or sessionStorage by its key.
+   * Gets a saved item from storage by its key.
    *
    * @this {WebStorage}
    * @param {String} key The property name of the item to save.
-   * @throws {Error} Will throw if for some reason item cannot be retrieved from storage.
    * @return {*} Returns the saved item.
    */
   getItem(key) {
@@ -94,18 +99,16 @@ class WebStorage {
       return _item;
     } catch (error) {
       this.dispatchEvent({type: events.get_err, data: error});
-      throw error;
     }
   }
 
   /**
-   * Saves an item to localStorage or sessionStorage.
+   * Saves an item to storage.
    *
    * @this {WebStorage}
    * @param {String} key The property name of teh item to save.
    * @param {*} value The item to save to the selected storage.
-   * @throws {Error} Will throw if for some reason item cannot be saved to storage.
-   * @return {*} Returns the saved item's value if save successful otherwise throws error.
+   * @return {WebStorage} The WebStorage instance for convenience and chaining.
    */
   setItem(key, value) {
     try {
@@ -113,11 +116,10 @@ class WebStorage {
       key = this.storeKeyPrefix + key;
       this.options.driver.setItem(key, JSON.stringify(value));
       this.dispatchEvent({type: events.set, data: value});
-      return value;
     } catch (error) {
       this.dispatchEvent({type: events.set_err, data: error});
-      throw error;
     }
+    return this;
   }
 
   /**
@@ -125,40 +127,33 @@ class WebStorage {
    *
    * @this {WebStorage}
    * @param {String} key The property name of the item to remove.
-   * @return {undefined}
+   * @return {WebStorage} The WebStorage instance for convenience and chaining.
    */
   removeItem(key) {
-    this.dispatchEvent({type: events.remove, data: key});
-    this.options.driver.removeItem(this.storeKeyPrefix + key);
+    try {
+      this.options.driver.removeItem(this.storeKeyPrefix + key);
+      this.dispatchEvent({type: events.remove, data: key});
+    } catch (error) {
+      this.dispatchEvent({type: events.remove_err, data: key});
+    }
+    return this;
   }
 
   /**
    * Removes all saved items from storage.
    *
-   * @NOTE The above applies only in cases that a new instance is created and the "name" is set.
-   *       This is because the only way to tell if an item is saved by an instance is the prefix of the key which is the "name" property.
-   *       If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
    * @this {WebStorage}
-   * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
-   * @return {undefined}
+   * @return {WebStorage} The WebStorage instance for convenience and chaining.
    */
-  clear(clearAll) {
+  clear() {
     const driver = this.options.driver;
-
-    if (clearAll === true) {
-      driver.clear();
-    } else {
-      iterateStorage(this, function (key) {
-        driver.removeItem(key);
-      });
-    }
-
+    iterateStorage(this, driver.removeItem.bind(driver));
     this.dispatchEvent({type: events.clear});
+    return this;
   }
 
   /**
    * Gets the list of all keys in the offline storage for a specific database.
-   * If "name" property is not set or set to '' (empty string), returns all keys in storage.
    *
    * @this {WebStorage}
    * @return {Array} An array of all the keys that belong to a specific database.
@@ -166,11 +161,7 @@ class WebStorage {
   keys() {
     const keysArr = [];
     const storeKeyPrefix = this.storeKeyPrefix;
-
-    iterateStorage(this, function (key) {
-      keysArr.push(removePrefix(key, storeKeyPrefix));
-    });
-
+    iterateStorage(this, key => keysArr.push(removePrefix(key, storeKeyPrefix)));
     return keysArr;
   }
 
@@ -181,33 +172,29 @@ class WebStorage {
    * @return {Number} The number of keys in the datastore.
    */
   length() {
-    let counter = 0;
-
-    iterateStorage(this, function () {
-      counter += 1;
-    });
-
-    return counter;
+    return this.keys().length;
   }
 
   /**
    * Iterate over all value/key pairs in datastore.
    *
    * @this {WebStorage}
-   * @param {function} callback A callabck function to execute for each iteration.
-   * @return {undefined}
+   * @param {function} iteratorCallback A callabck function to execute for each iteration.
+   *        `iteratorCallback` is called once for each pair, with the following arguments:
+   *        - {String} key The key of the saved item.
+   *        - {*} value The value of the saved item.
+   * @return {WebStorage} The WebStorage instance for convenience and chaining.
    */
-  iterate(callback) {
+  iterate(iteratorCallback) {
     const storeKeyPrefix = this.storeKeyPrefix;
 
-    iterateStorage(this, function (key, value, iterationNumber) {
+    iterateStorage(this, (key, value) => {
       const _key = removePrefix(key, storeKeyPrefix);
       const _value = JSON.parse(value);
-
-      if (callback && callback(_key, _value, iterationNumber) === false) {
-        return false;
-      }
+      iteratorCallback && iteratorCallback.call(this, _key, _value);
     });
+
+    return this;
   }
 
   /**
@@ -220,7 +207,7 @@ class WebStorage {
     const items = {};
     let totalSize = 0;
 
-    iterateStorage(this, function (key, value) {
+    iterateStorage(this, (key, value) => {
       const itemSize = value.length * 2 / 1024 / 1024;
       totalSize += itemSize;
       items[key] = itemSize;
@@ -234,7 +221,7 @@ class WebStorage {
 
   /**
    * Checks if the driver of choice (localStorage or sessionStorage) is supported.
-   * It will return `false` if storage is full.
+   * It may return `false` if storage is full.
    *
    * @this {WebStorage}
    * @return {Boolean} Returns true if Web Storage is supported; otherwise false.

@@ -1,7 +1,7 @@
 /*!
- * webStorage - A minimal Javascript wrapper to work with localStorage and sessionStorage
+ * webStorage - A minimal Javascript library that improves the way you work with localStorage or sessionStorage.
  * 
- * @version v1.2.4
+ * @version v2.0.0
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository https://github.com/georapbox/webStorage.git
@@ -106,9 +106,9 @@ var _trim = __webpack_require__(3);
 
 var _trim2 = _interopRequireDefault(_trim);
 
-var _extend = __webpack_require__(4);
+var _assign = __webpack_require__(4);
 
-var _extend2 = _interopRequireDefault(_extend);
+var _assign2 = _interopRequireDefault(_assign);
 
 var _isStorageSupported = __webpack_require__(5);
 
@@ -125,6 +125,8 @@ var _iterateStorage2 = _interopRequireDefault(_iterateStorage);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var dbNameError = 'You must use a valid name for the database.';
 
 /**
  * Default webStorage configuration
@@ -147,6 +149,7 @@ var events = {
   get: 'getItem',
   get_err: 'getItemError',
   remove: 'removeItem',
+  remove_err: 'removeItemError',
   clear: 'clear'
 };
 
@@ -156,14 +159,15 @@ var WebStorage = function () {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
+   * @throws {Error} If a `options.name` is not a valid non-empty string.
    */
   function WebStorage(options) {
     _classCallCheck(this, WebStorage);
 
-    options = (0, _extend2.default)({}, defaultConfig, options);
+    options = (0, _assign2.default)({}, defaultConfig, options);
 
-    if (options.name == null || (0, _trim2.default)(options.name) === '') {
-      throw 'You must use a valid name for the database.';
+    if (typeof options.name !== 'string' || (0, _trim2.default)(options.name) === '') {
+      throw new Error(dbNameError);
     }
 
     this.options = options;
@@ -175,7 +179,7 @@ var WebStorage = function () {
    * Creates a new instance of WebStorage.
    *
    * @param {Object} options Object that contains config options to extend defaults.
-   * @return {Object} The WebStorage new instance.
+   * @return {WebStorage} A new WebStorage instance.
    */
 
 
@@ -190,28 +194,29 @@ var WebStorage = function () {
      *
      * @this {WebStorage}
      * @param {Object} options Object that contains config options to extend defaults.
-     * @return {undefined}
+     * @throws {Error} If a `options.name` is not a valid non-empty string.
+     * @return {WebStorage} The WebStorage instance for convenience and chaining.
      */
 
   }, {
     key: 'config',
     value: function config(options) {
-      options = (0, _extend2.default)({}, defaultConfig, options);
+      options = (0, _assign2.default)({}, defaultConfig, options);
 
-      if (options.name == null || (0, _trim2.default)(options.name) === '') {
-        throw 'You must use a valid name for the database.';
+      if (typeof options.name !== 'string' || (0, _trim2.default)(options.name) === '') {
+        throw new Error(dbNameError);
       }
 
       this.options = options;
       this.storeKeyPrefix = (0, _createKeyPrefix2.default)(this);
+      return this;
     }
 
     /**
-     * Gets a saved item from localStorage or sessionStorage by its key.
+     * Gets a saved item from storage by its key.
      *
      * @this {WebStorage}
      * @param {String} key The property name of the item to save.
-     * @throws {Error} Will throw if for some reason item cannot be retrieved from storage.
      * @return {*} Returns the saved item.
      */
 
@@ -226,18 +231,16 @@ var WebStorage = function () {
         return _item;
       } catch (error) {
         this.dispatchEvent({ type: events.get_err, data: error });
-        throw error;
       }
     }
 
     /**
-     * Saves an item to localStorage or sessionStorage.
+     * Saves an item to storage.
      *
      * @this {WebStorage}
      * @param {String} key The property name of teh item to save.
      * @param {*} value The item to save to the selected storage.
-     * @throws {Error} Will throw if for some reason item cannot be saved to storage.
-     * @return {*} Returns the saved item's value if save successful otherwise throws error.
+     * @return {WebStorage} The WebStorage instance for convenience and chaining.
      */
 
   }, {
@@ -248,11 +251,10 @@ var WebStorage = function () {
         key = this.storeKeyPrefix + key;
         this.options.driver.setItem(key, JSON.stringify(value));
         this.dispatchEvent({ type: events.set, data: value });
-        return value;
       } catch (error) {
         this.dispatchEvent({ type: events.set_err, data: error });
-        throw error;
       }
+      return this;
     }
 
     /**
@@ -260,46 +262,39 @@ var WebStorage = function () {
      *
      * @this {WebStorage}
      * @param {String} key The property name of the item to remove.
-     * @return {undefined}
+     * @return {WebStorage} The WebStorage instance for convenience and chaining.
      */
 
   }, {
     key: 'removeItem',
     value: function removeItem(key) {
-      this.dispatchEvent({ type: events.remove, data: key });
-      this.options.driver.removeItem(this.storeKeyPrefix + key);
+      try {
+        this.options.driver.removeItem(this.storeKeyPrefix + key);
+        this.dispatchEvent({ type: events.remove, data: key });
+      } catch (error) {
+        this.dispatchEvent({ type: events.remove_err, data: key });
+      }
+      return this;
     }
 
     /**
      * Removes all saved items from storage.
      *
-     * @NOTE The above applies only in cases that a new instance is created and the "name" is set.
-     *       This is because the only way to tell if an item is saved by an instance is the prefix of the key which is the "name" property.
-     *       If a new instance is created but does not have "name" set, then .clear() will clear all items from the driver set.
      * @this {WebStorage}
-     * @param {Boolean} clearAll If true, will clear all items from local(session)Storage, else will clear only the items saved by the instance created.
-     * @return {undefined}
+     * @return {WebStorage} The WebStorage instance for convenience and chaining.
      */
 
   }, {
     key: 'clear',
-    value: function clear(clearAll) {
+    value: function clear() {
       var driver = this.options.driver;
-
-      if (clearAll === true) {
-        driver.clear();
-      } else {
-        (0, _iterateStorage2.default)(this, function (key) {
-          driver.removeItem(key);
-        });
-      }
-
+      (0, _iterateStorage2.default)(this, driver.removeItem.bind(driver));
       this.dispatchEvent({ type: events.clear });
+      return this;
     }
 
     /**
      * Gets the list of all keys in the offline storage for a specific database.
-     * If "name" property is not set or set to '' (empty string), returns all keys in storage.
      *
      * @this {WebStorage}
      * @return {Array} An array of all the keys that belong to a specific database.
@@ -310,11 +305,9 @@ var WebStorage = function () {
     value: function keys() {
       var keysArr = [];
       var storeKeyPrefix = this.storeKeyPrefix;
-
       (0, _iterateStorage2.default)(this, function (key) {
-        keysArr.push((0, _removePrefix2.default)(key, storeKeyPrefix));
+        return keysArr.push((0, _removePrefix2.default)(key, storeKeyPrefix));
       });
-
       return keysArr;
     }
 
@@ -328,36 +321,34 @@ var WebStorage = function () {
   }, {
     key: 'length',
     value: function length() {
-      var counter = 0;
-
-      (0, _iterateStorage2.default)(this, function () {
-        counter += 1;
-      });
-
-      return counter;
+      return this.keys().length;
     }
 
     /**
      * Iterate over all value/key pairs in datastore.
      *
      * @this {WebStorage}
-     * @param {function} callback A callabck function to execute for each iteration.
-     * @return {undefined}
+     * @param {function} iteratorCallback A callabck function to execute for each iteration.
+     *        `iteratorCallback` is called once for each pair, with the following arguments:
+     *        - {String} key The key of the saved item.
+     *        - {*} value The value of the saved item.
+     * @return {WebStorage} The WebStorage instance for convenience and chaining.
      */
 
   }, {
     key: 'iterate',
-    value: function iterate(callback) {
+    value: function iterate(iteratorCallback) {
+      var _this = this;
+
       var storeKeyPrefix = this.storeKeyPrefix;
 
-      (0, _iterateStorage2.default)(this, function (key, value, iterationNumber) {
+      (0, _iterateStorage2.default)(this, function (key, value) {
         var _key = (0, _removePrefix2.default)(key, storeKeyPrefix);
         var _value = JSON.parse(value);
-
-        if (callback && callback(_key, _value, iterationNumber) === false) {
-          return false;
-        }
+        iteratorCallback && iteratorCallback.call(_this, _key, _value);
       });
+
+      return this;
     }
 
     /**
@@ -387,7 +378,7 @@ var WebStorage = function () {
 
     /**
      * Checks if the driver of choice (localStorage or sessionStorage) is supported.
-     * It will return `false` if storage is full.
+     * It may return `false` if storage is full.
      *
      * @this {WebStorage}
      * @return {Boolean} Returns true if Web Storage is supported; otherwise false.
@@ -624,23 +615,32 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = _obj_extend;
-function _obj_extend() {
-  for (var i = 1, l = arguments.length; i < l; i++) {
-    for (var key in arguments[i]) {
-      if ({}.hasOwnProperty.call(arguments[i], key)) {
-        if (arguments[i][key] && arguments[i][key].constructor && arguments[i][key].constructor === Object) {
-          arguments[0][key] = arguments[0][key] || {};
-          _obj_extend(arguments[0][key], arguments[i][key]);
-        } else {
-          arguments[0][key] = arguments[i][key];
+exports.default = assign;
+function assign(target) {
+  if (target == null) {
+    // TypeError if undefined or null
+    throw new TypeError('Cannot convert undefined or null to object');
+  }
+
+  var to = Object(target);
+
+  for (var index = 0; index < (arguments.length <= 1 ? 0 : arguments.length - 1); index += 1) {
+    var nextSource = arguments.length <= index + 1 ? undefined : arguments[index + 1];
+
+    if (nextSource != null) {
+      // Skip over if undefined or null
+      for (var nextKey in nextSource) {
+        // Avoid bugs when hasOwnProperty is shadowed
+        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+          to[nextKey] = nextSource[nextKey];
         }
       }
     }
   }
-  return arguments[0];
+
+  return to;
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 
 /***/ }),
 /* 5 */
@@ -715,7 +715,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * Helper function that iterates over storage keys.
- * Early exit by returning false inside iterator callback.
  *
  * @param {Object} instance The WebStorage instance.
  * @param {function} callback A function to be executed for each iteration.
@@ -723,13 +722,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function iterateStorage(instance, callback) {
   var driver = instance.options.driver;
-  var iterationNumber = 0;
 
   Object.keys(driver).forEach(function (key) {
     if ((0, _keyBelongsToDb2.default)(instance, key)) {
-      if (callback(key, driver[key], ++iterationNumber) === false) {
-        return false;
-      }
+      callback(key, driver[key]);
     }
   });
 }
