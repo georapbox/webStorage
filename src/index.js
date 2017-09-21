@@ -39,7 +39,7 @@ class WebStorage {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
-   * @throws {Error} If a `options.name` is not a valid non-empty string.
+   * @throws {Error} If a `options.name` is not a string or an empty string.
    */
   constructor(options) {
     options = assign({}, defaultConfig, options);
@@ -68,8 +68,8 @@ class WebStorage {
    *
    * @this {WebStorage}
    * @param {Object} options Object that contains config options to extend defaults.
-   * @throws {Error} If a `options.name` is not a valid non-empty string.
-   * @return {WebStorage} The WebStorage instance for convenience and chaining.
+   * @throws {Error} If a `options.name` is not a string or an empty string.
+   * @return {WebStorage} The WebStorage instance for chaining.
    */
   config(options) {
     options = assign({}, defaultConfig, options);
@@ -87,7 +87,7 @@ class WebStorage {
    * Gets a saved item from storage by its key.
    *
    * @this {WebStorage}
-   * @param {String} key The property name of the item to save.
+   * @param {String} key The property name of the saved item.
    * @return {*} Returns the saved item.
    */
   getItem(key) {
@@ -106,9 +106,9 @@ class WebStorage {
    * Saves an item to storage.
    *
    * @this {WebStorage}
-   * @param {String} key The property name of teh item to save.
-   * @param {*} value The item to save to the selected storage.
-   * @return {WebStorage} The WebStorage instance for convenience and chaining.
+   * @param {String} key The property name of the item to save.
+   * @param {*} [value=null] The item to save to the selected storage.
+   * @return {WebStorage} The WebStorage instance for chaining.
    */
   setItem(key, value) {
     try {
@@ -123,11 +123,11 @@ class WebStorage {
   }
 
   /**
-   * Removes an item from storage.
+   * Removes the item for the specific key from the storage.
    *
    * @this {WebStorage}
    * @param {String} key The property name of the item to remove.
-   * @return {WebStorage} The WebStorage instance for convenience and chaining.
+   * @return {WebStorage} The WebStorage instance for chaining.
    */
   removeItem(key) {
     try {
@@ -143,7 +143,7 @@ class WebStorage {
    * Removes all saved items from storage.
    *
    * @this {WebStorage}
-   * @return {WebStorage} The WebStorage instance for convenience and chaining.
+   * @return {WebStorage} The WebStorage instance for chaining.
    */
   clear() {
     const driver = this.options.driver;
@@ -166,10 +166,10 @@ class WebStorage {
   }
 
   /**
-   * Gets the number of keys in the datastore.
+   * Gets the number of items saved in a specific database.
    *
    * @this {WebStorage}
-   * @return {Number} The number of keys in the datastore.
+   * @return {Number} The number of items for a specific database.
    */
   length() {
     return this.keys().length;
@@ -179,11 +179,11 @@ class WebStorage {
    * Iterate over all value/key pairs in datastore.
    *
    * @this {WebStorage}
-   * @param {function} iteratorCallback A callabck function to execute for each iteration.
+   * @param {function} iteratorCallback A callabck function to be executed for each iteration.
    *        `iteratorCallback` is called once for each pair, with the following arguments:
    *        - {String} key The key of the saved item.
    *        - {*} value The value of the saved item.
-   * @return {WebStorage} The WebStorage instance for convenience and chaining.
+   * @return {WebStorage} The WebStorage instance for chaining.
    */
   iterate(iteratorCallback) {
     const storeKeyPrefix = this.storeKeyPrefix;
@@ -198,10 +198,10 @@ class WebStorage {
   }
 
   /**
-   * Display (approximately) the size for each key in datastore and the total size of all kesy in MB.
+   * Display (approximately) the size for each saved item in datastore and the total size of all items in MB.
    *
    * @this {WebStorage}
-   * @return {Object<string,number>} An object with two properties that display the size for each key and the total size in MB.
+   * @return {Object<string,number>} An object with two properties that display the size for each saved item and the total size in MB.
    */
   quota() {
     const items = {};
@@ -224,7 +224,7 @@ class WebStorage {
    * It may return `false` if storage is full.
    *
    * @this {WebStorage}
-   * @return {Boolean} Returns true if Web Storage is supported; otherwise false.
+   * @return {Boolean} True if driver is supported; otherwise false.
    */
   supported() {
     return isStorageSupported(this.options.driver);

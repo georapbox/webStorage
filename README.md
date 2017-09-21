@@ -20,120 +20,132 @@ A minimal Javascript library that improves the way you work with `localStorage` 
 $ npm install webStorage
 ```
 
-## Setup API
+### Git
 
-### config
-
-```js
-config(options)
+```bash
+$ git clone https://github.com/georapbox/webStorage.git
 ```
 
-Set and persist webStorage options. This must be called before any other calls to webStorage are made. The following options can be set:
+## A few words...
+
+The purpose of this library is to allow the user to manipulate data to `localStorage` or `sessionStorage` accordingly using a namespace (default is "webStorage") as a prefix for each item's key. This is by design in order to avoid potential conflicts with other key/value pairs that are probably already saved to storage. So, for example, if the database name we provided is `myApp`, calling `clear()` will remove only the items with key prefix `myApp`. The same principle applies to all available API methods of the library.
+
+## API methods
+
+### config([options]) => WebStorage
+
+Set and persist webStorage options. This must be called before any other calls to webStorage are made.
+
+**Kind:** instance method of `WebStorage`  
+**Throws:** `Error` if `options.name` is not a string or empty string.  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
+
+The following options can be set:
 
 |Option|Type|Description|Default value|
 |------|----|-----------|-------------|
 |**driver**|`Object`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|`localStorage`|
 |**name**|`String`|The name of the database. This is used as prefix for all keys stored in the offline storage.|`webStorage`|
 
-Will throw `Error` if `options.name` is not a valid, non-empty string.
-
-
-### createInstance
-
-```js
-createInstance([options])
-```
+### createInstance([options]) => WebStorage
 
 Creates a new instance of the webStorage. The `options` can be the same as `config(options)`.  
-Will throw `Error` if `options.name` is not a valid, non-empty string.
 
+**Kind:** instance method of `WebStorage`  
+**Throws:** `Error` if `options.name` is not a string or empty string.  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
 
-## Data API
+### getItem(key) => *
 
-The API methods below deal with getting and setting data in an offline store.
+Gets a saved item from storage by its key.
 
-### getItem
+**Kind:** instance method of `WebStorage`  
+**Returns:** `*` - The value of the saved item. If the `key` does not exist, will return `null`.
 
-```js
-getItem(key)
-```
+|Param|Type|Default|Description|
+|-----|----|-------|-----------|
+|key|`String`||The property name of the saved item|
 
-Gets an item from an offline store. If the key does not exist, `getItem()` will return null.
+### setItem(key, [value]) => WebStorage
 
-### setItem
-
-```js
-setItem(key, value)
-```
-
-Saves an item to an offline store. You can store the following types of JavaScript objects:
+Saves an item to storage. You can store the following types of JavaScript objects:
 
 - String
 - Number
 - Array
 - Object
 
-### removeItem
+**Kind:** instance method of `WebStorage`  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
 
-```js
-removeItem(key)
-```
+|Param|Type|Default|Description|
+|-----|----|-------|-----------|
+|key|`String`||The property name of the item to save|
+|[value]|`*`|`null`|The item to save to the selected storage.|
 
-Removes the value of a key from the offline store.
+### removeItem(key) => WebStorage
 
-### clear
+Removes the item for the specific key from the storage.
 
-```js
-clear()
-```
+**Kind:** instance method of `WebStorage`  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
+
+|Param|Type|Default|Description|
+|-----|----|-------|-----------|
+|key|`String`||The property name of the item to remove|
+
+### clear() => WebStorage
 
 Removes all saved items from storage.
 
-### keys
+**Kind:** instance method of `WebStorage`  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
 
-```js
-keys()
-```
+### keys() => Array
 
-Gets the list of all keys in the offline storage for a specific database.
+Gets the list of all keys in the storage for a specific database.
 
-### length
+**Kind:** instance method of `WebStorage`  
+**Returns:** `Array` - An array of all the keys that belong to a specific database.
 
-```js
-length()
-```
+### length() => Number
 
-Gets the number of keys in the datastore.
+Gets the number of items saved in a specific database.
 
-### iterate
+**Kind:** instance method of `WebStorage`  
+**Returns:** `Number` - The number of items for a specific database.
 
-```js
-iterate(iteratorCallback)
-```
+### iterate(iteratorCallback) => WebStorage
 
 Iterate over all value/key pairs in datastore.
 
+**Kind:** instance method of `WebStorage`  
+**Returns:** `WebStorage` - The WebStorage instance for chaining.
+
+|Param|Type|Default|Description|
+|-----|----|-------|-----------|
+|iteratorCallback|`Function`||A callabck function to be executed for each iteration|
+
 `iteratorCallback` is called once for each pair, with the following arguments:
 
-- `{String} key` The key of the saved item.
-- `{*} value` The value of the saved item.
+|Param|Type|Description|
+|-----|----|-----------|
+|key|`String`|The key of the saved item.|
+|value|`*`|The value of the saved item.|
 
-### quota
+### quota() => Object
 
-```js
-quota()
-```
+Display (approximately) the size for each saved item in datastore and the total size of all items in MB.
 
-Approximately display the size for each key in datastore and the total size of all keys in MB.
+**Kind:** instance method of `WebStorage`  
+**Returns:** `Object<string,number>` - An object with two properties that display the size for each saved item and the total size in MB.
 
-### supported
-
-```js
-supported()
-```
+### supported() => Boolean
 
 Checks if the driver of choice (`localStorage` or `sessionStorage`) is supported by the browser. It may return `false` if storage is full.
 
+**Kind:** instance method of `WebStorage`  
+**Returns:** `Boolean` - True if driver is supported; otherwise false.
 
 ## Usage Example
 
@@ -180,9 +192,9 @@ ls.keys(); // -> Array [ "dummyKey", "company", "user" ]
 ls.iterate(function (key, value) {
   console.log(key, ':', value);
 });
-// -> 1 : dummyKey : 100
-// -> 2 : company : Microsoft
-// -> 3 : user : Object { id: 2, name: "George Cooper", email: "gcooper@outlook.com" }
+// -> dummyKey : 100
+// -> company : Microsoft
+// -> user : Object { id: 2, name: "George Cooper", email: "gcooper@outlook.com" }
 
 /* Quota */
 ls.quota();

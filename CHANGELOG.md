@@ -6,7 +6,7 @@
 
 ## Other updates
 - `removeItemError` event is now emitted if there is an error while removing an item from storage.
-- `config`, `setItem`, `removeItem` and `iterate` methods now return an instance reference for chaining purposes.
+- `config`, `setItem`, `removeItem`, `clear` and `iterate` methods now return an instance reference for chaining purposes.
 - Keep devDependencies up to date.
 
 # 1.2.4
