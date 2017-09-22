@@ -210,7 +210,6 @@ ls.length(); // -> 0
 ls.keys(); // -> Array []
 ```
 
-
 ## Events
 
 webStorage instances emit custom events the user can subscribe on:
@@ -244,7 +243,6 @@ ls.removeEventListener('setItem', onItemSave);
 ls.hasEventListener('setItem', onItemSave);
 ```
 
-
 ## Build for development
 
 ```bash
@@ -262,6 +260,10 @@ $ npm run build
 ```bash
 $ npm test
 ```
+
+## Changelog
+
+For API updates and breaking changes, check the [CHANGELOG](https://github.com/georapbox/webStorage/blob/master/CHANGELOG.md).
 
 ## License
 
