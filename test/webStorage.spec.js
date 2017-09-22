@@ -123,4 +123,40 @@ describe('webStorage', function () {
     expect(ls1.length()).toBe(3);
     expect(ls2.length()).toBe(2);
   });
+
+  it('Should return an object that represents total quota', function () {
+    localStorage.clear();
+
+    const ls = webStorage.createInstance({
+      name: 'App'
+    });
+
+    ls.setItem('numbers', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    ls.setItem('user', {name: 'Jojn Doe', email: 'john@doe.com'});
+    ls.setItem('loremipsum', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
+
+    expect(typeof ls.quota().total).toBe('number');
+    expect(ls.quota().total).toBeGreaterThan(0);
+
+    expect(typeof ls.quota().items['App/numbers']).toBe('number');
+    expect(ls.quota().items['App/numbers']).toBeGreaterThan(0);
+
+    expect(typeof ls.quota().items['App/user']).toBe('number');
+    expect(ls.quota().items['App/user']).toBeGreaterThan(0);
+
+    expect(typeof ls.quota().items['App/loremipsum']).toBe('number');
+    expect(ls.quota().items['App/loremipsum']).toBeGreaterThan(0);
+
+    ls.clear();
+
+    expect(typeof ls.quota().total).toBe('number');
+    expect(ls.quota().total).toBe(0);
+
+    expect(ls.quota().items).toEqual({});
+  });
+
+  it('Should return true if selected driver is supported', function () {
+    expect(webStorage.config({driver: localStorage}).supported()).toBe(true);
+    expect(webStorage.config({driver: sessionStorage}).supported()).toBe(true);
+  });
 });
