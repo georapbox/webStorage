@@ -5,7 +5,7 @@
  * @return {String} Returns the keys's prefix.
  */
 function createKeyPrefix(instance) {
-  return `${instance.options.name}/`;
+  return `${instance.options.name}${instance.options.keySeparator}`;
 }
 
 export default createKeyPrefix;

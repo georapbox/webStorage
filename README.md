@@ -37,7 +37,8 @@ The purpose of this library is to allow the user to manipulate data to `localSto
 Set and persist webStorage options. This must be called before any other calls to webStorage are made.
 
 **Kind:** instance method of `WebStorage`  
-**Throws:** `Error` if `options.name` is not a string or empty string.  
+**Throws:** `TypeError` if `options.name` is not a string or empty string.  
+**Throws:** `TypeError` if `options.keySeparator` is not a string or empty string.  
 **Returns:** `WebStorage` - The WebStorage instance for chaining.
 
 The following options can be set:
@@ -46,13 +47,15 @@ The following options can be set:
 |------|----|-----------|-------------|
 |**driver**|`Object`|The preferred driver to use. Use one between `localStorage` and `sessionStorage`.|`localStorage`|
 |**name**|`String`|The name of the database. This is used as prefix for all keys stored in the offline storage.|`webStorage`|
+|**keySeparator**|`String`|String that separates database name and key.|`/`|
 
 ### createInstance([options]) => WebStorage
 
 Creates a new instance of the webStorage. The `options` can be the same as `config(options)`.  
 
 **Kind:** instance method of `WebStorage`  
-**Throws:** `Error` if `options.name` is not a string or empty string.  
+**Throws:** `TypeError` if `options.name` is not a string or empty string.  
+**Throws:** `TypeError` if `options.keySeparator` is not a string or empty string.  
 **Returns:** `WebStorage` - The WebStorage instance for chaining.
 
 ### getItem(key) => *

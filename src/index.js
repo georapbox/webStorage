@@ -7,6 +7,7 @@ import createKeyPrefix from './create-key-prefix';
 import iterateStorage from './iterate-storage';
 
 const dbNameError = 'You must use a valid name for the database.';
+const keySeparatorError = 'keySeparator must be a non empty string';
 
 /**
  * Default webStorage configuration
@@ -15,7 +16,8 @@ const dbNameError = 'You must use a valid name for the database.';
  */
 const defaultConfig = {
   driver: localStorage,
-  name: 'webStorage'
+  name: 'webStorage',
+  keySeparator: '/'
 };
 
 /**
@@ -39,13 +41,18 @@ class WebStorage {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
-   * @throws {Error} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.keySeparator` is not a string or an empty string.
    */
   constructor(options) {
     options = assign({}, defaultConfig, options);
 
     if (typeof options.name !== 'string' || trim(options.name) === '') {
-      throw new Error(dbNameError);
+      throw new TypeError(dbNameError);
+    }
+
+    if (typeof options.keySeparator !== 'string' || trim(options.keySeparator) === '') {
+      throw new TypeError(keySeparatorError);
     }
 
     this.options = options;
@@ -68,14 +75,19 @@ class WebStorage {
    *
    * @this {WebStorage}
    * @param {Object} options Object that contains config options to extend defaults.
-   * @throws {Error} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.keySeparator` is not a string or an empty string.
    * @return {WebStorage} The WebStorage instance for chaining.
    */
   config(options) {
     options = assign({}, defaultConfig, options);
 
     if (typeof options.name !== 'string' || trim(options.name) === '') {
-      throw new Error(dbNameError);
+      throw new TypeError(dbNameError);
+    }
+
+    if (typeof options.keySeparator !== 'string' || trim(options.keySeparator) === '') {
+      throw new TypeError(keySeparatorError);
     }
 
     this.options = options;

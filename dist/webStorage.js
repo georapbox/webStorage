@@ -1,7 +1,7 @@
 /*!
  * webStorage - A minimal Javascript library that improves the way you work with localStorage or sessionStorage.
  * 
- * @version v2.0.0
+ * @version v2.1.0
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository https://github.com/georapbox/webStorage.git
@@ -127,6 +127,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var dbNameError = 'You must use a valid name for the database.';
+var keySeparatorError = 'keySeparator must be a non empty string';
 
 /**
  * Default webStorage configuration
@@ -135,7 +136,8 @@ var dbNameError = 'You must use a valid name for the database.';
  */
 var defaultConfig = {
   driver: localStorage,
-  name: 'webStorage'
+  name: 'webStorage',
+  keySeparator: '/'
 };
 
 /**
@@ -159,7 +161,8 @@ var WebStorage = function () {
    *
    * @constructor
    * @param {Object} [options] Object that contains config options to extend defaults.
-   * @throws {Error} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.name` is not a string or an empty string.
+   * @throws {TypeError} If a `options.keySeparator` is not a string or an empty string.
    */
   function WebStorage(options) {
     _classCallCheck(this, WebStorage);
@@ -167,7 +170,11 @@ var WebStorage = function () {
     options = (0, _assign2.default)({}, defaultConfig, options);
 
     if (typeof options.name !== 'string' || (0, _trim2.default)(options.name) === '') {
-      throw new Error(dbNameError);
+      throw new TypeError(dbNameError);
+    }
+
+    if (typeof options.keySeparator !== 'string' || (0, _trim2.default)(options.keySeparator) === '') {
+      throw new TypeError(keySeparatorError);
     }
 
     this.options = options;
@@ -194,7 +201,8 @@ var WebStorage = function () {
      *
      * @this {WebStorage}
      * @param {Object} options Object that contains config options to extend defaults.
-     * @throws {Error} If a `options.name` is not a string or an empty string.
+     * @throws {TypeError} If a `options.name` is not a string or an empty string.
+     * @throws {TypeError} If a `options.keySeparator` is not a string or an empty string.
      * @return {WebStorage} The WebStorage instance for chaining.
      */
 
@@ -204,7 +212,11 @@ var WebStorage = function () {
       options = (0, _assign2.default)({}, defaultConfig, options);
 
       if (typeof options.name !== 'string' || (0, _trim2.default)(options.name) === '') {
-        throw new Error(dbNameError);
+        throw new TypeError(dbNameError);
+      }
+
+      if (typeof options.keySeparator !== 'string' || (0, _trim2.default)(options.keySeparator) === '') {
+        throw new TypeError(keySeparatorError);
       }
 
       this.options = options;
@@ -690,7 +702,7 @@ Object.defineProperty(exports, "__esModule", {
  * @return {String} Returns the keys's prefix.
  */
 function createKeyPrefix(instance) {
-  return instance.options.name + "/";
+  return "" + instance.options.name + instance.options.keySeparator;
 }
 
 exports.default = createKeyPrefix;

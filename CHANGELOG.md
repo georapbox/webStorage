@@ -1,3 +1,6 @@
+# 2.1.0
+- [[#2](https://github.com/georapbox/webStorage/issues/2)] Ability to configure the separator between database name and key via `keySeparator` option.
+
 # 2.0.0
 ## Breaking changes
 - `clear` method no longer supports `clearAll` argument that used to flush everything in storage no matter the database name. If you need to do that use the native API of `Storage`, eg. `localStorage.clear()`
