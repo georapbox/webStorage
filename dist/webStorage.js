@@ -1,7 +1,7 @@
 /*!
  * webStorage - A minimal Javascript library that improves the way you work with localStorage or sessionStorage.
  * 
- * @version v2.1.0
+ * @version v2.1.1
  * @author George Raptis <georapbox@gmail.com> (georapbox.github.io)
  * @homepage https://github.com/georapbox/webStorage#readme
  * @repository https://github.com/georapbox/webStorage.git
