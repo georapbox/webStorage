@@ -80,7 +80,7 @@ class WebStorage {
    * @return {WebStorage} The WebStorage instance for chaining.
    */
   config(options) {
-    options = assign({}, defaultConfig, options);
+    options = assign({}, this.options, options);
 
     if (typeof options.name !== 'string' || trim(options.name) === '') {
       throw new TypeError(dbNameError);

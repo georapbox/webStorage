@@ -209,7 +209,7 @@ var WebStorage = function () {
   }, {
     key: 'config',
     value: function config(options) {
-      options = (0, _assign2.default)({}, defaultConfig, options);
+      options = (0, _assign2.default)({}, this.options, options);
 
       if (typeof options.name !== 'string' || (0, _trim2.default)(options.name) === '') {
         throw new TypeError(dbNameError);

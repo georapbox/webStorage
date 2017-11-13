@@ -1,3 +1,6 @@
+# 2.1.1
+- [[#3](https://github.com/georapbox/webStorage/issues/3)] Fix issue with `config` method that would not merge properly new options with the instance's options.
+
 # 2.1.0
 - [[#2](https://github.com/georapbox/webStorage/issues/2)] Ability to configure the separator between database name and key via `keySeparator` option.
 
