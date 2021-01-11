@@ -1,3 +1,5 @@
+## [DEPRECATED] This is no longer supported, please consider using [WebStorage](https://github.com/georapbox/web-storage) instead.
+
 # webStorage
 
 A minimal Javascript library that improves the way you work with `localStorage` or `sessionStorage`.
